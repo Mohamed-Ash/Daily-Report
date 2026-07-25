@@ -1,8 +1,28 @@
 {
-  "ts": "2026-07-25 09:38",
-  "activeCount": 0,
+  "ts": "2026-07-25 09:57",
+  "activeCount": 905,
   "onHoldCount": 0,
   "completedCount": 0,
-  "firstActive": null,
+  "firstActive": {
+    "name": "1086-113-1",
+    "ownerType": "undefined",
+    "keys": [
+      "is_strict",
+      "bug_count",
+      "owner_id",
+      "bug_client_permission",
+      "taskbug_prefix",
+      "start_date_long",
+      "updated_date_long",
+      "show_project_overview",
+      "task_count",
+      "updated_date_format",
+      "bug_defaultview",
+      "id",
+      "is_chat_enabled",
+      "is_sprints_project",
+      "owner_name"
+    ]
+  },
   "p1Rows": 0
 }
