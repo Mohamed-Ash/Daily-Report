@@ -1,10 +1,10 @@
 {
-  "ts": "2026-07-25 14:51",
-  "total": 909,
+  "ts": "2026-07-25 15:01",
+  "total": 910,
   "active": 197,
   "onHold": 29,
-  "completed": 660,
-  "cacheSize": 120,
+  "completed": 661,
+  "cacheSize": 198,
   "sampleProject": {
     "name": "1089-114--1",
     "owner": "Jenna Ellwaa"
@@ -55,15 +55,14 @@
     "1028-113-1",
     "1019-113-1"
   ],
-  "taskBudgetLeft": 0,
   "p1Rows": 0,
   "metrics": {
     "p1Delayed": 0,
     "p2": 0,
-    "p3": 14,
+    "p3": 50,
     "onHold": 29,
-    "recv": 103,
-    "coll": 103,
+    "recv": 168,
+    "coll": 168,
     "overDue": 1,
     "amer": 0,
     "sijilDelay": 0,
