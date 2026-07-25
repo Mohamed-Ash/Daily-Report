@@ -1,20 +1,31 @@
 {
-  "ts": "2026-07-25 11:01",
-  "activeCount": 907,
-  "onHoldCount": 0,
-  "completedCount": 0,
+  "ts": "2026-07-25 12:18",
+  "total": 907,
+  "active": 195,
+  "onHold": 29,
+  "completed": 660,
+  "cacheSize": 195,
   "firstActive": {
-    "name": "karemdarwishTest",
-    "owner_name": "Walid Mohsen"
+    "name": "KDTest",
+    "cs": "Active",
+    "owner": "Walid Mohsen"
   },
+  "firstMs": 0,
+  "firstTasks": 0,
   "p1Rows": 0,
-  "cacheSize": 2689,
-  "sampleRaw": {
-    "pid": "2533013000003795545",
-    "pname": "karemdarwishTest",
-    "msStatus": 400,
-    "msSnip": "{}",
-    "tsStatus": 400,
-    "tsSnip": "{}"
+  "metrics": {
+    "p1Delayed": 0,
+    "p2Delayed": 0,
+    "p3Delayed": 50,
+    "onHold": 29,
+    "recvLic": 45,
+    "collectLic": 26,
+    "offerDelay": 9,
+    "america": 13,
+    "sijilDelay": 0,
+    "sijilAmer": 0,
+    "sijilLic": 0,
+    "completedMonth": 52,
+    "completed112": 10
   }
 }
