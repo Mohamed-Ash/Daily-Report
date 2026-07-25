@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-25 10:47",
+  "ts": "2026-07-25 10:56",
   "activeCount": 907,
   "onHoldCount": 0,
   "completedCount": 0,
@@ -8,5 +8,13 @@
     "owner_name": "Walid Mohsen"
   },
   "p1Rows": 0,
-  "cacheSize": 2689
+  "cacheSize": 2689,
+  "sampleRaw": {
+    "pid": "2533013000003795545",
+    "pname": "karemdarwishTest",
+    "msStatus": 400,
+    "msSnip": "{}",
+    "tsStatus": 400,
+    "tsSnip": "{}"
+  }
 }
