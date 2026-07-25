@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-25 13:45",
+  "ts": "2026-07-25 13:53",
   "total": 909,
   "active": 197,
   "onHold": 29,
@@ -12,15 +12,15 @@
   "sampleMilestones": [
     {
       "name": "الدفعة الاولى",
-      "status": "Active"
+      "status": "open"
     },
     {
       "name": "الدفعة الثانية",
-      "status": "Active"
+      "status": "open"
     },
     {
       "name": "الدفعة الثالثة",
-      "status": "Active"
+      "status": "open"
     }
   ],
   "sampleTaskNames": [
@@ -46,9 +46,9 @@
     "p2": 0,
     "p3": 50,
     "onHold": 29,
-    "recv": 47,
-    "coll": 28,
-    "overDue": 9,
+    "recv": 15,
+    "coll": 14,
+    "overDue": 0,
     "amer": 0,
     "sijilDelay": 0,
     "sijilAmer": 0,
