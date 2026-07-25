@@ -1,17 +1,16 @@
 {
-  "ts": "2026-07-25 13:05",
-  "total": 907,
-  "active": 195,
+  "ts": "2026-07-25 13:35",
+  "total": 909,
+  "active": 197,
   "onHold": 29,
   "completed": 660,
-  "cacheSize": 195,
-  "firstActive": {
-    "name": "Test11",
-    "cs": "Active",
-    "owner": "Walid Mohsen"
+  "cacheSize": 197,
+  "sampleProject": {
+    "name": "1088-113-1",
+    "owner": "fatema ellwaa"
   },
-  "firstMs": 0,
-  "firstTasks": 0,
+  "sampleMilestones": [],
+  "sampleTaskNames": [],
   "p1Rows": 0,
   "metrics": {
     "p1Delayed": 0,
@@ -21,7 +20,7 @@
     "recv": 19,
     "coll": 17,
     "overDue": 1,
-    "amer": 2,
+    "amer": 0,
     "sijilDelay": 0,
     "sijilAmer": 0,
     "licMonth": 0,
