@@ -1,28 +1,12 @@
 {
-  "ts": "2026-07-25 10:31",
-  "activeCount": 906,
+  "ts": "2026-07-25 10:47",
+  "activeCount": 907,
   "onHoldCount": 0,
   "completedCount": 0,
   "firstActive": {
-    "name": "1087-113-1",
-    "ownerType": "undefined",
-    "keys": [
-      "is_strict",
-      "bug_count",
-      "owner_id",
-      "bug_client_permission",
-      "taskbug_prefix",
-      "start_date_long",
-      "updated_date_long",
-      "show_project_overview",
-      "task_count",
-      "updated_date_format",
-      "bug_defaultview",
-      "id",
-      "is_chat_enabled",
-      "is_sprints_project",
-      "owner_name"
-    ]
+    "name": "karemdarwishTest",
+    "owner_name": "Walid Mohsen"
   },
-  "p1Rows": 0
+  "p1Rows": 0,
+  "cacheSize": 2689
 }
