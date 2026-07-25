@@ -1,40 +1,8 @@
 {
-  "metrics": {
-    "p2": 46,
-    "p3": 52,
-    "recv": 44,
-    "coll": 25,
-    "licMonth": 62,
-    "sijilSaudi": 108,
-    "clientApproval": 58,
-    "overDue": 1,
-    "sijilDelay": 2,
-    "sijilAmer": 2,
-    "amer": 12,
-    "completedMonth": 22,
-    "completed112": 3
-  },
-  "amActive": {
-    "Jenna Ellwaa": 37,
-    "Youssef Mellwaa": 38,
-    "Mostafa Ellwaa": 5,
-    "fatema ellwaa": 36,
-    "pola ellwaa": 55,
-    "Esraa Ellwaa": 14
-  },
-  "amOnHold": {
-    "pola ellwaa": 2,
-    "Esraa Ellwaa": 6,
-    "fatema ellwaa": 6,
-    "Jenna Ellwaa": 4
-  },
-  "cacheStats": {
-    "total": 1572,
-    "hits": 899,
-    "misses": 0
-  },
-  "doneProjectsCount": 685,
-  "sampleMilestones": [],
-  "sampleTasks": [],
-  "ts": "2026-07-24T19:03:55.197Z"
+  "ts": "2026-07-25 09:38",
+  "activeCount": 0,
+  "onHoldCount": 0,
+  "completedCount": 0,
+  "firstActive": null,
+  "p1Rows": 0
 }
