@@ -1,12 +1,12 @@
 {
-  "ts": "2026-07-25 12:18",
+  "ts": "2026-07-25 13:01",
   "total": 907,
   "active": 195,
   "onHold": 29,
   "completed": 660,
   "cacheSize": 195,
   "firstActive": {
-    "name": "KDTest",
+    "name": "Test11",
     "cs": "Active",
     "owner": "Walid Mohsen"
   },
@@ -15,16 +15,16 @@
   "p1Rows": 0,
   "metrics": {
     "p1Delayed": 0,
-    "p2Delayed": 0,
-    "p3Delayed": 50,
+    "p2": 0,
+    "p3": 13,
     "onHold": 29,
-    "recvLic": 45,
-    "collectLic": 26,
-    "offerDelay": 9,
-    "america": 13,
+    "recv": 43,
+    "coll": 26,
+    "overDue": 9,
+    "amer": 12,
     "sijilDelay": 0,
     "sijilAmer": 0,
-    "sijilLic": 0,
+    "licMonth": 0,
     "completedMonth": 52,
     "completed112": 10
   }
