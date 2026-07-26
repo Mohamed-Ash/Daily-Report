@@ -142,6 +142,7 @@ function renderKPIs(metrics) {
 }
 
 function renderAM(amData) {
+  const knownEns = new Set(AM_ORDER_AR.map(({en}) => en));
   AM_ORDER_AR.forEach(({ en, ar }) => {
     const row = document.getElementById('am-row-' + en.replace(/ /g,'_'));
     if (!row) return;
@@ -149,17 +150,38 @@ function renderAM(amData) {
     if (cells.length < 5) return;
     cells[1].querySelector('.badge').textContent = amData.active[en] || 0;
     cells[2].querySelector('.badge').textContent = amData.onHold[en] || 0;
-    // p2/p3 byManager not in history — show 0 if not available
     cells[3].querySelector('.badge').textContent = 0;
     cells[4].querySelector('.badge').textContent = 0;
   });
-  // totals
-  const totAc = AM_ORDER_AR.reduce((s,{en}) => s + (amData.active[en]||0), 0);
-  const totOh = AM_ORDER_AR.reduce((s,{en}) => s + (amData.onHold[en]||0), 0);
+  // auto-add unknown AMs
+  const totRow = document.getElementById('am-totals');
+  if (totRow) {
+    Object.keys(amData.active || {}).forEach(en => {
+      if (knownEns.has(en)) return;
+      const active = amData.active[en] || 0;
+      const onHold = (amData.onHold || {})[en] || 0;
+      if (!active && !onHold) return;
+      const rowId = 'am-row-new-' + en.replace(/ /g,'_');
+      let row = document.getElementById(rowId);
+      if (!row) {
+        row = document.createElement('tr');
+        row.id = rowId;
+        row.innerHTML = '<td class="am-name">'+en+'</td><td><span class="badge b-green">0</span></td><td><span class="badge b-gold">0</span></td><td><span class="badge b-red">0</span></td><td><span class="badge b-red">0</span></td>';
+        totRow.parentNode.insertBefore(row, totRow);
+      }
+      row.querySelectorAll('td')[1].querySelector('.badge').textContent = active;
+      row.querySelectorAll('td')[2].querySelector('.badge').textContent = onHold;
+      row.querySelectorAll('td')[3].querySelector('.badge').textContent = 0;
+      row.querySelectorAll('td')[4].querySelector('.badge').textContent = 0;
+    });
+  }
+  // totals — include all
+  const allAc = Object.values(amData.active || {}).reduce((s,v)=>s+v,0);
+  const allOh = Object.values(amData.onHold || {}).reduce((s,v)=>s+v,0);
   const tot = document.getElementById('am-totals');
   if (tot) {
-    tot.children[1].querySelector('.badge').textContent = totAc;
-    tot.children[2].querySelector('.badge').textContent = totOh;
+    tot.children[1].querySelector('.badge').textContent = allAc;
+    tot.children[2].querySelector('.badge').textContent = allOh;
     tot.children[3].querySelector('.badge').textContent = 0;
     tot.children[4].querySelector('.badge').textContent = 0;
   }
