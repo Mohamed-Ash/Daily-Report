@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-26 13:54",
+  "ts": "2026-07-26 13:59",
   "total": 913,
   "active": 198,
   "onHold": 29,
@@ -20,7 +20,7 @@
     "completedMonth": 35,
     "completed112": 10,
     "onHold": 29,
-    "p1Delayed": 0
+    "p1Delayed": 145
   },
   "p2_sample": [
     "1011-113-1",
