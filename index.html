@@ -217,7 +217,7 @@ let _histPos   = -1; // -1 = today
 
 async function initHistory() {
   try {
-    const r = await fetch('history/index.json');
+    const r = await fetch('history/index.json?t=' + Date.now());
     _histIndex = await r.json();
     const sel = document.getElementById('hist-select');
     if (sel) sel.innerHTML =
@@ -263,7 +263,7 @@ async function loadHistPos(pos) {
   const dateStr = _histIndex[pos];
   if (!dateStr) return;
   try {
-    const r = await fetch('history/' + dateStr + '.json');
+    const r = await fetch('history/' + dateStr + '.json?t=' + Date.now());
     const h = await r.json();
     _Dcur = h.details || {};
     renderKPIs(h.metrics || {}); renderAM(h.amData || {active:{},onHold:{}}); renderDetails(h.metrics || {}, h.details || {});
