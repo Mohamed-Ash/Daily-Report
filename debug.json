@@ -1,24 +1,24 @@
 {
-  "ts": "2026-07-26 13:01",
+  "ts": "2026-07-26 13:11",
   "total": 912,
   "active": 197,
   "onHold": 29,
   "completed": 662,
-  "cacheSize": 871,
+  "cacheSize": 900,
   "metrics": {
     "p2": 44,
     "p3": 50,
     "recv": 47,
     "coll": 29,
-    "licMonth": 57,
+    "licMonth": 67,
     "sijilSaudi": 108,
     "clientApproval": 65,
     "overDue": 1,
     "sijilDelay": 1,
     "sijilAmer": 3,
     "amer": 10,
-    "completedMonth": 12,
-    "completed112": 4,
+    "completedMonth": 35,
+    "completed112": 10,
     "onHold": 29,
     "p1Delayed": 0
   },
@@ -43,183 +43,5 @@
     "1088-113-1",
     "1087-113-1"
   ],
-  "firstDone": {
-    "is_strict": "no",
-    "bug_count": {
-      "closed": 0,
-      "open": 0
-    },
-    "owner_id": "926516317",
-    "bug_client_permission": "allexternal",
-    "taskbug_prefix": "71B2",
-    "start_date_long": 1779318000000,
-    "updated_date_long": 1785055303740,
-    "show_project_overview": true,
-    "task_count": {
-      "closed": 49,
-      "open": 7
-    },
-    "updated_date_format": "07-26-2026 09:41:43 AM",
-    "bug_defaultview": "6",
-    "id": 2533013000003490000,
-    "is_chat_enabled": false,
-    "is_sprints_project": false,
-    "owner_name": "pola ellwaa",
-    "created_date_long": 1782569093247,
-    "group_name": "sherouk ellwaa",
-    "custom_fields": [
-      {
-        "Run Assignment": "true"
-      },
-      {
-        "users": "pola ellwaa"
-      },
-      {
-        "سجل تعديلات السعودية": "false"
-      },
-      {
-        "Total_Working_Days": "45"
-      },
-      {
-        "Contract_Start_Date": "05-25-2026"
-      },
-      {
-        "Days_Consumed": "39"
-      },
-      {
-        "Last_Counted_Date": "07-26-2026"
-      },
-      {
-        "Counter_Status": "Active"
-      },
-      {
-        "Total_Paused_Days": "0"
-      },
-      {
-        "Days_Remaining": "6"
-      },
-      {
-        "Generate_Report": "false"
-      }
-    ],
-    "created_by": "Walid Mohsen",
-    "created_date_format": "06-27-2026 03:04:53 PM",
-    "comments_count": 0,
-    "profile_id": 2533013000000059400,
-    "name": "710-113-2",
-    "updated_by": "Walid Mohsen",
-    "updated_by_id": "887911019",
-    "created_by_id": "887911019",
-    "updated_by_zpuid": 2533013000000059000,
-    "bug_prefix": "71B2-I",
-    "TAGS": [],
-    "status": "active",
-    "business_hours": {
-      "name": "Standard Business Hours",
-      "id": "2533013000000061660"
-    },
-    "none_milestone_id": "2533013000000000073",
-    "project_percent": "87",
-    "role": "Portal Owner",
-    "IS_BUG_ENABLED": true,
-    "completed_on": "07-22-2026",
-    "link": {
-      "activity": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/activities/"
-      },
-      "document": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/documents/"
-      },
-      "forum": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/forums/"
-      },
-      "timesheet": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/logs/"
-      },
-      "task": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/tasks/"
-      },
-      "folder": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/folders/"
-      },
-      "milestone": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/milestones/"
-      },
-      "bug": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/bugs/"
-      },
-      "self": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/"
-      },
-      "tasklist": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/tasklists/"
-      },
-      "event": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/events/"
-      },
-      "user": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/users/"
-      },
-      "status": {
-        "url": "https://projectsapi.zoho.com/restapi/portal/896030705/projects/2533013000003489758/statuses/"
-      }
-    },
-    "created_by_zpuid": 2533013000000059000,
-    "custom_status_id": "2533013000000020116",
-    "description": "<div><br></div>",
-    "milestone_count": {
-      "closed": 2,
-      "open": 1
-    },
-    "custom_status_name": "Completed",
-    "owner_zpuid": "2533013000003169027",
-    "is_client_assign_bug": "false",
-    "billing_status": "Billable",
-    "currency": "USD",
-    "key": "EL-1035",
-    "start_date": "05-21-2026",
-    "owner_email": "polaellwaa@gmail.com",
-    "custom_status_color": "#4fd3e5",
-    "currency_symbol": "$",
-    "completed_on_long": 1784761199000,
-    "group_id": 2533013000001565000,
-    "enabled_tabs": [
-      "dashboard",
-      "tasks",
-      "users",
-      "calendar",
-      "reports",
-      "documents",
-      "milestones",
-      "timesheet",
-      "bugs",
-      "projectfeed"
-    ],
-    "is_public": "no",
-    "id_string": "2533013000003489758",
-    "created_date": "06-27-2026",
-    "updated_date": "07-26-2026",
-    "cascade_setting": {
-      "date": false,
-      "logHours": false,
-      "plan": true,
-      "percentage": false,
-      "workHours": false
-    },
-    "layout_details": {
-      "task": {
-        "is_private": false,
-        "name": "Standard Layout",
-        "id": "2533013000000016011"
-      },
-      "bug": {
-        "name": "710-113-1",
-        "id": "2533013000003489770"
-      },
-      "project": {
-        "name": "Standard Layout",
-        "id": "2533013000000020008"
-      }
-    }
-  }
+  "firstDone": null
 }
