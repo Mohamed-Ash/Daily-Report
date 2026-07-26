@@ -276,10 +276,18 @@ function updateHistNav() {
 async function loadHistPos(pos) {
   _histPos = pos;
   if (pos === -1) {
-    _Dcur = _D;
-    renderKPIs(_M); renderAM(_A); renderDetails(_M, _D);
-    renderP1Delayed(_P1D, _P1D.length);
-    document.getElementById('upd-at').textContent = 'الأحد، ٢٦ يوليو ٢٠٢٦ في ٠٥:٣٨ م';
+    try {
+      const r = await fetch('data.json?t=' + Date.now());
+      const h = await r.json();
+      _Dcur = h.details || _D;
+      renderKPIs(h.metrics || _M); renderAM(h.amData || _A); renderDetails(h.metrics || _M, h.details || _D);
+      renderP1Delayed((h.details || {}).p1Delayed || _P1D, (h.metrics || {}).p1Delayed || _P1D.length);
+      document.getElementById('upd-at').textContent = h.updatedAt || _TODAY;
+    } catch {
+      _Dcur = _D;
+      renderKPIs(_M); renderAM(_A); renderDetails(_M, _D);
+      renderP1Delayed(_P1D, _P1D.length);
+    }
     updateHistNav(); return;
   }
   const dateStr = _histIndex[pos];
