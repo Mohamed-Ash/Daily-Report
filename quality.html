@@ -200,7 +200,10 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
 <!-- ── قسم الاكونت مانجر ── -->
 <div id="tab-am" class="tab-panel active">
   <div class="sub-tab-bar">
-    <button class="sub-tab-btn active" onclick="showSubTab('am','onHold')">
+    <button class="sub-tab-btn active" onclick="showSubTab('am','p1Delayed')">
+      دفعة أولى متأخرة <span class="stc" id="stc-p1Delayed">—</span>
+    </button>
+    <button class="sub-tab-btn" onclick="showSubTab('am','onHold')">
       عملاء أون هولد <span class="stc" id="stc-onHold">—</span>
     </button>
     <button class="sub-tab-btn" onclick="showSubTab('am','p2')">
@@ -216,9 +219,10 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
     <button class="search-clear" id="sclear-am" onclick="clearSearch('am')">✕</button>
     <div class="search-count" id="scount-am"></div>
   </div>
-  <div id="sub-am-onHold" class="sub-panel active"></div>
-  <div id="sub-am-p2"     class="sub-panel"></div>
-  <div id="sub-am-p3"     class="sub-panel"></div>
+  <div id="sub-am-p1Delayed" class="sub-panel active"></div>
+  <div id="sub-am-onHold"   class="sub-panel"></div>
+  <div id="sub-am-p2"       class="sub-panel"></div>
+  <div id="sub-am-p3"       class="sub-panel"></div>
 </div>
 
 <!-- ── قسم السعودية ── -->
@@ -326,12 +330,13 @@ if (sessionStorage.getItem('qa_auth') === 'ok') {
 // ── Config ────────────────────────────────────────────────────────────────────
 const MAIN_TABS = ['am','saudi','egypt'];
 const SUB_TABS  = {
-  am:    ['onHold','p2','p3'],
+  am:    ['p1Delayed','onHold','p2','p3'],
   saudi: ['overDue','clientApproval'],
   egypt: ['sijilDelay','sahayef'],
 };
 
 const PANEL_MAP = {
+  p1Delayed:      { mainTab:'am',    label:'الدفعة الأولى المتأخرة' },
   onHold:         { mainTab:'am',    label:'عملاء أون هولد' },
   p2:             { mainTab:'am',    label:'الدفعة الثانية المتأخرة' },
   p3:             { mainTab:'am',    label:'الدفعة الثالثة المتأخرة' },
@@ -359,6 +364,7 @@ async function loadAll() {
 
     document.getElementById('page-loading').style.display = 'none';
 
+    renderPanel('am',    'p1Delayed');
     renderPanel('am',    'onHold');
     renderPanel('am',    'p2');
     renderPanel('am',    'p3');
