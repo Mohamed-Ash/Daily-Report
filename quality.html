@@ -114,6 +114,14 @@ tbody tr:hover td{background:rgba(14,168,152,.02)}
 .placeholder-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:13px;padding:48px;text-align:center;color:var(--text-dim);font-size:13px}
 .page-loading{text-align:center;color:var(--text-dim);padding:60px;font-size:14px}
 footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px}
+.search-wrap{margin-bottom:10px;position:relative}
+.search-inp{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:10px 38px 10px 14px;font-family:inherit;font-size:13px;transition:border .15s}
+.search-inp:focus{border-color:var(--teal);outline:none;background:rgba(14,168,152,.04)}
+.search-inp::placeholder{color:var(--text-dim);font-size:12px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:14px;pointer-events:none}
+.search-clear{position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:13px;padding:2px 5px;border-radius:4px;display:none}
+.search-clear:hover{color:var(--text)}
+.search-count{font-size:11px;color:var(--text-dim);margin-top:4px;text-align:left;display:none}
 
 /* ── Import ───────────────────────────────────────── */
 .add-bar-btns{display:flex;gap:6px;flex-wrap:wrap}
@@ -202,6 +210,12 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
       دفعة ثالثة متأخرة <span class="stc" id="stc-p3">—</span>
     </button>
   </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-inp" id="search-am" placeholder="ابحث بـ ID أو اسم الأكونت مانجر..." oninput="filterTable('am',this.value)" autocomplete="off">
+    <button class="search-clear" id="sclear-am" onclick="clearSearch('am')">✕</button>
+    <div class="search-count" id="scount-am"></div>
+  </div>
   <div id="sub-am-onHold" class="sub-panel active"></div>
   <div id="sub-am-p2"     class="sub-panel"></div>
   <div id="sub-am-p3"     class="sub-panel"></div>
@@ -217,6 +231,12 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
       الفرق بين تسليم السجل و الموافقة على الأوفر فيو <span class="stc" id="stc-clientApproval">—</span>
     </button>
   </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-inp" id="search-saudi" placeholder="ابحث بـ ID أو اسم الأكونت مانجر..." oninput="filterTable('saudi',this.value)" autocomplete="off">
+    <button class="search-clear" id="sclear-saudi" onclick="clearSearch('saudi')">✕</button>
+    <div class="search-count" id="scount-saudi"></div>
+  </div>
   <div id="sub-saudi-overDue"        class="sub-panel active"></div>
   <div id="sub-saudi-clientApproval" class="sub-panel"></div>
 </div>
@@ -230,6 +250,12 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
     <button class="sub-tab-btn" onclick="showSubTab('egypt','sahayef')">
       التأخير في الصحايف <span class="stc" id="stc-sahayef">—</span>
     </button>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-inp" id="search-egypt" placeholder="ابحث بـ ID أو اسم الأكونت مانجر..." oninput="filterTable('egypt',this.value)" autocomplete="off">
+    <button class="search-clear" id="sclear-egypt" onclick="clearSearch('egypt')">✕</button>
+    <div class="search-count" id="scount-egypt"></div>
   </div>
   <div id="sub-egypt-sijilDelay" class="sub-panel active"></div>
   <div id="sub-egypt-sahayef"    class="sub-panel"></div>
@@ -801,6 +827,43 @@ async function confirmImport() {
   }
 }
 
+// ── Search ────────────────────────────────────────────────────────────────────
+function filterTable(mainTab, q) {
+  const val = q.trim().toLowerCase();
+  const clearBtn = document.getElementById('sclear-' + mainTab);
+  const countEl  = document.getElementById('scount-' + mainTab);
+  if (clearBtn) clearBtn.style.display = val ? 'block' : 'none';
+
+  const activeSub = document.querySelector('#tab-' + mainTab + ' .sub-panel.active');
+  if (!activeSub) return;
+
+  const rows = activeSub.querySelectorAll('tbody tr');
+  let visible = 0, total = 0;
+  rows.forEach(row => {
+    if (row.querySelector('td[colspan]')) return;
+    total++;
+    const text = row.textContent.toLowerCase();
+    const show = !val || text.includes(val);
+    row.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+
+  if (countEl) {
+    if (val && total > 0) {
+      countEl.style.display = 'block';
+      countEl.textContent = visible + ' من ' + total + ' نتيجة';
+    } else {
+      countEl.style.display = 'none';
+    }
+  }
+}
+
+function clearSearch(mainTab) {
+  const inp = document.getElementById('search-' + mainTab);
+  if (inp) { inp.value = ''; inp.focus(); }
+  filterTable(mainTab, '');
+}
+
 // ── Tab navigation ────────────────────────────────────────────────────────────
 function showMainTab(name) {
   MAIN_TABS.forEach(t => {
@@ -809,6 +872,7 @@ function showMainTab(name) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => {
     b.classList.toggle('active', MAIN_TABS[i]===name);
   });
+  clearSearch(name);
 }
 
 function showSubTab(main, sub) {
@@ -822,6 +886,8 @@ function showSubTab(main, sub) {
       b.classList.toggle('active', SUB_TABS[main][i]===sub);
     });
   }
+  const q = document.getElementById('search-' + main)?.value || '';
+  if (q) filterTable(main, q);
 }
 </script>
 </body>
