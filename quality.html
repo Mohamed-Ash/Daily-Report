@@ -122,6 +122,20 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
 .search-clear{position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:13px;padding:2px 5px;border-radius:4px;display:none}
 .search-clear:hover{color:var(--text)}
 .search-count{font-size:11px;color:var(--text-dim);margin-top:4px;text-align:left;display:none}
+.add-tab-btn{background:none;border:1px dashed var(--teal-border);color:var(--teal);padding:10px 16px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.add-tab-btn:hover{background:var(--teal-muted);border-color:var(--teal)}
+.custom-tab-del{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:none;border:none;color:transparent;cursor:pointer;font-size:10px;border-radius:3px;margin-right:4px;vertical-align:middle;transition:all .15s}
+.tab-btn:hover .custom-tab-del,.tab-btn.active .custom-tab-del{color:var(--text-dim)}
+.custom-tab-del:hover{color:var(--red)!important;background:var(--red-muted)}
+.stb-del{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:none;border:none;color:transparent;cursor:pointer;font-size:9px;border-radius:3px;margin-right:3px;vertical-align:middle;transition:all .15s}
+.sub-tab-btn:hover .stb-del,.sub-tab-btn.active .stb-del{color:var(--text-dim)}
+.stb-del:hover{color:var(--red)!important;background:var(--red-muted)}
+.ct-modal-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px}
+.ct-modal-select:focus{border-color:var(--teal);outline:none}
+.ct-type-row{display:flex;gap:16px;flex-wrap:wrap}
+.ct-type-lbl{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;color:var(--text-dim)}
+.ct-type-lbl input{accent-color:var(--teal);width:15px;height:15px}
+.ct-type-lbl.active{color:var(--teal)}
 
 /* ── Import ───────────────────────────────────────── */
 .add-bar-btns{display:flex;gap:6px;flex-wrap:wrap}
@@ -191,10 +205,11 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
 </header>
 
 <!-- Main tabs -->
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="showMainTab('am')">👤 قسم الاكونت مانجر</button>
-  <button class="tab-btn" onclick="showMainTab('saudi')">🇸🇦 قسم السعودية</button>
-  <button class="tab-btn" onclick="showMainTab('egypt')">🇪🇬 قسم مصر</button>
+<div class="tab-bar" id="main-tab-bar">
+  <button class="tab-btn active" id="tabBtn-am" onclick="showMainTab('am')">👤 قسم الاكونت مانجر</button>
+  <button class="tab-btn" id="tabBtn-saudi" onclick="showMainTab('saudi')">🇸🇦 قسم السعودية</button>
+  <button class="tab-btn" id="tabBtn-egypt" onclick="showMainTab('egypt')">🇪🇬 قسم مصر</button>
+  <button class="add-tab-btn" onclick="openCustomTabModal()">＋ قسم جديد</button>
 </div>
 
 <!-- ── قسم الاكونت مانجر ── -->
@@ -293,6 +308,66 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
   </div>
 </div>
 
+<!-- ── Custom Tab Modal ── -->
+<div id="custom-tab-modal" class="import-modal-overlay" onclick="if(event.target===this)closeCustomTabModal()">
+  <div class="import-modal">
+    <div class="import-modal-header">
+      <span>＋ إضافة قسم جديد</span>
+      <button class="import-close" onclick="closeCustomTabModal()">✕</button>
+    </div>
+    <div class="import-modal-body">
+      <div>
+        <div class="import-map-title">نوع القسم</div>
+        <div class="ct-type-row">
+          <label class="ct-type-lbl active" id="ctlbl-main">
+            <input type="radio" name="cttype" value="main" checked onchange="onCtTypeChange()"> قسم رئيسي جديد
+          </label>
+          <label class="ct-type-lbl" id="ctlbl-sub">
+            <input type="radio" name="cttype" value="sub" onchange="onCtTypeChange()"> تبويب داخل قسم موجود
+          </label>
+        </div>
+      </div>
+      <div id="ct-parent-row" style="display:none">
+        <div class="import-map-title">القسم الأب</div>
+        <select id="ct-parent" class="ct-modal-select">
+          <option value="am">👤 قسم الاكونت مانجر</option>
+          <option value="saudi">🇸🇦 قسم السعودية</option>
+          <option value="egypt">🇪🇬 قسم مصر</option>
+        </select>
+      </div>
+      <div>
+        <div class="import-map-title">اسم القسم</div>
+        <input type="text" id="ct-label" class="ct-modal-select" placeholder="مثال: متابعة خاصة...">
+      </div>
+      <div>
+        <div class="import-map-title">مصدر البيانات</div>
+        <select id="ct-datakey" class="ct-modal-select">
+          <option value="">يدوي فقط (فارغ)</option>
+          <option value="recv">استلام المستندات — recv</option>
+          <option value="coll">التحصيل — coll</option>
+          <option value="licMonth">صدور الترخيص في الشهر — licMonth</option>
+          <option value="sijilSaudi">السجل التجاري السعودي — sijilSaudi</option>
+          <option value="sijilAmer">السجل وأمريكا مفتوحة — sijilAmer</option>
+          <option value="amer">أمريكا — amer</option>
+          <option value="completedMonth">المنتهون في الشهر — completedMonth</option>
+          <option value="completed112">المنتهون مصر — completed112</option>
+          <option value="p1Delayed">دفعة أولى متأخرة — p1Delayed</option>
+          <option value="p2">دفعة ثانية متأخرة — p2</option>
+          <option value="p3">دفعة ثالثة متأخرة — p3</option>
+          <option value="onHold">عملاء أون هولد — onHold</option>
+          <option value="overDue">التأخير في الأوفر فيو — overDue</option>
+          <option value="clientApproval">الموافقة على الأوفر فيو — clientApproval</option>
+          <option value="sijilDelay">تأخير السجل التجاري مصر — sijilDelay</option>
+        </select>
+      </div>
+      <div class="import-footer" style="padding-top:0">
+        <button class="import-confirm-btn" onclick="confirmCreateCustomTab()">إنشاء القسم</button>
+        <span class="save-ind" id="ct-save-ind"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="page-loading" class="page-loading">⏳ جاري تحميل البيانات...</div>
 
 <footer>EL LWAA LAW FIRM © 2025 | قسم الجودة والمتابعة</footer>
@@ -347,8 +422,9 @@ const PANEL_MAP = {
 };
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-let _hist     = {};
-let _feedback = {};
+let _hist       = {};
+let _feedback   = {};
+let _customTabs = [];
 
 async function loadAll() {
   try {
@@ -361,6 +437,7 @@ async function loadAll() {
     _hist = await histR.json();
 
     await reloadFeedback();
+    loadCustomTabs();
 
     document.getElementById('page-loading').style.display = 'none';
 
@@ -394,11 +471,11 @@ function getManualEntries(key) {
   return (_feedback['__manual__::' + key] || []);
 }
 
-function renderPanel(mainTab, key) {
+function renderPanel(mainTab, key, dataKey) {
   const el = document.getElementById('sub-' + mainTab + '-' + key);
   if (!el) return;
 
-  const rows    = (_hist.details || {})[key] || [];
+  const rows    = (_hist.details || {})[dataKey || key] || [];
   const manuals = getManualEntries(key);
   const total   = rows.length + manuals.length;
 
@@ -833,6 +910,179 @@ async function confirmImport() {
   }
 }
 
+// ── Custom Tabs ───────────────────────────────────────────────────────────────
+function loadCustomTabs() {
+  _customTabs = _feedback['__custom_tabs__'] || [];
+  _customTabs.forEach(ct => {
+    if (ct.type === 'main') createCustomMainTab(ct, false);
+    else createCustomSubTab(ct, false);
+  });
+}
+
+function createCustomMainTab(ct, andRender) {
+  if (document.getElementById('tab-' + ct.id)) return;
+
+  // Tab button
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn';
+  btn.id = 'tabBtn-' + ct.id;
+  btn.onclick = () => showMainTab(ct.id);
+  btn.innerHTML = ct.label +
+    ' <button class="custom-tab-del" onclick="event.stopPropagation();deleteCustomTab(\'' + ct.id + '\')" title="حذف القسم">✕</button>';
+  document.getElementById('main-tab-bar').querySelector('.add-tab-btn').before(btn);
+
+  // Search bar HTML
+  const searchHTML = `<div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-inp" id="search-${ct.id}" placeholder="ابحث بـ ID أو اسم..." oninput="filterTable('${ct.id}',this.value)" autocomplete="off">
+    <button class="search-clear" id="sclear-${ct.id}" onclick="clearSearch('${ct.id}')">✕</button>
+    <div class="search-count" id="scount-${ct.id}"></div>
+  </div>`;
+
+  // Main panel div
+  const panel = document.createElement('div');
+  panel.id = 'tab-' + ct.id;
+  panel.className = 'tab-panel';
+  panel.innerHTML = `
+    <div class="sub-tab-bar" id="subtabbar-${ct.id}">
+      <button class="sub-tab-btn active" id="subtabBtn-${ct.id}_p"
+        onclick="showSubTab('${ct.id}','${ct.id}_p')">
+        ${ct.label} <span class="stc" id="stc-${ct.id}_p">—</span>
+      </button>
+    </div>
+    ${searchHTML}
+    <div id="sub-${ct.id}-${ct.id}_p" class="sub-panel active"></div>`;
+  document.querySelector('footer').before(panel);
+
+  // Register in config
+  MAIN_TABS.push(ct.id);
+  SUB_TABS[ct.id] = [ct.id + '_p'];
+
+  if (andRender !== false) renderPanel(ct.id, ct.id + '_p', ct.dataKey || null);
+  else renderPanel(ct.id, ct.id + '_p', ct.dataKey || null);
+}
+
+function createCustomSubTab(ct, andRender) {
+  const parentId = ct.parentTab;
+  const subId    = ct.id;
+
+  if (document.getElementById('sub-' + parentId + '-' + subId)) return;
+
+  // Sub-tab button
+  const btn = document.createElement('button');
+  btn.className = 'sub-tab-btn';
+  btn.id = 'subtabBtn-' + subId;
+  btn.onclick = () => showSubTab(parentId, subId);
+  btn.innerHTML = ct.label +
+    ' <span class="stc" id="stc-' + subId + '">—</span>' +
+    ' <button class="stb-del" onclick="event.stopPropagation();deleteCustomTab(\'' + subId + '\')" title="حذف">✕</button>';
+
+  const subtabbar = document.getElementById('subtabbar-' + parentId)
+    || document.querySelector('#tab-' + parentId + ' .sub-tab-bar');
+  if (subtabbar) subtabbar.appendChild(btn);
+
+  // Sub-panel div — insert inside the parent tab panel
+  const subPanel = document.createElement('div');
+  subPanel.id = 'sub-' + parentId + '-' + subId;
+  subPanel.className = 'sub-panel';
+  const parentPanel = document.getElementById('tab-' + parentId);
+  if (parentPanel) parentPanel.appendChild(subPanel);
+
+  // Register in config
+  if (!SUB_TABS[parentId]) SUB_TABS[parentId] = [];
+  if (!SUB_TABS[parentId].includes(subId)) SUB_TABS[parentId].push(subId);
+
+  renderPanel(parentId, subId, ct.dataKey || null);
+}
+
+async function deleteCustomTab(id) {
+  if (!confirm('حذف هذا القسم نهائياً؟')) return;
+  try {
+    const getR   = await ghGet(FB_FILE);
+    const getData = await getR.json();
+    const remote  = JSON.parse(b64dec(getData.content));
+    remote['__custom_tabs__'] = (remote['__custom_tabs__'] || []).filter(ct => ct.id !== id);
+    await ghPut(FB_FILE, remote, getData.sha, 'quality: delete custom tab ' + id);
+    location.reload();
+  } catch(e) { console.error('deleteCustomTab:', e); }
+}
+
+// ── Custom Tab Modal ──────────────────────────────────────────────────────────
+function openCustomTabModal() {
+  // Populate parent dropdown with custom main tabs too
+  const parentSel = document.getElementById('ct-parent');
+  const customMains = (_feedback['__custom_tabs__'] || []).filter(ct => ct.type === 'main');
+  const fixed = [
+    {value:'am',    label:'👤 قسم الاكونت مانجر'},
+    {value:'saudi', label:'🇸🇦 قسم السعودية'},
+    {value:'egypt', label:'🇪🇬 قسم مصر'},
+  ];
+  parentSel.innerHTML = [...fixed, ...customMains.map(ct => ({value:ct.id, label:ct.label}))]
+    .map(o => `<option value="${o.value}">${esc(o.label)}</option>`).join('');
+
+  // Reset form
+  document.querySelector('input[name="cttype"][value="main"]').checked = true;
+  document.getElementById('ct-parent-row').style.display = 'none';
+  document.getElementById('ct-label').value = '';
+  document.getElementById('ct-datakey').value = '';
+  document.getElementById('ct-save-ind').textContent = '';
+  document.getElementById('ctlbl-main').classList.add('active');
+  document.getElementById('ctlbl-sub').classList.remove('active');
+  document.getElementById('custom-tab-modal').classList.add('open');
+  setTimeout(() => document.getElementById('ct-label').focus(), 80);
+}
+
+function closeCustomTabModal() {
+  document.getElementById('custom-tab-modal').classList.remove('open');
+}
+
+function onCtTypeChange() {
+  const isSub = document.querySelector('input[name="cttype"]:checked').value === 'sub';
+  document.getElementById('ct-parent-row').style.display = isSub ? 'block' : 'none';
+  document.getElementById('ctlbl-main').classList.toggle('active', !isSub);
+  document.getElementById('ctlbl-sub').classList.toggle('active', isSub);
+}
+
+async function confirmCreateCustomTab() {
+  const type     = document.querySelector('input[name="cttype"]:checked').value;
+  const label    = document.getElementById('ct-label').value.trim();
+  const dataKey  = document.getElementById('ct-datakey').value || null;
+  const parentTab = type === 'sub' ? document.getElementById('ct-parent').value : null;
+  const si       = document.getElementById('ct-save-ind');
+
+  if (!label) {
+    document.getElementById('ct-label').focus();
+    document.getElementById('ct-label').style.borderColor = 'var(--red)';
+    setTimeout(() => { document.getElementById('ct-label').style.borderColor = ''; }, 2000);
+    return;
+  }
+
+  si.className = 'save-ind saving'; si.textContent = '...';
+
+  try {
+    const id     = 'ct_' + Date.now();
+    const newTab = { id, type, label, dataKey, parentTab, addedAt: new Date().toISOString() };
+
+    const getR   = await ghGet(FB_FILE);
+    const getData = await getR.json();
+    const remote  = JSON.parse(b64dec(getData.content));
+    remote['__custom_tabs__'] = [...(remote['__custom_tabs__'] || []), newTab];
+    _feedback = remote;
+    _customTabs = remote['__custom_tabs__'];
+
+    await ghPut(FB_FILE, remote, getData.sha, 'quality: add custom tab ' + label);
+
+    if (type === 'main') createCustomMainTab(newTab);
+    else createCustomSubTab(newTab);
+
+    si.className = 'save-ind saved'; si.textContent = '✓ تم';
+    setTimeout(() => closeCustomTabModal(), 800);
+  } catch(e) {
+    console.error('confirmCreateCustomTab:', e);
+    si.className = 'save-ind err'; si.textContent = '✗ خطأ';
+  }
+}
+
 // ── Search ────────────────────────────────────────────────────────────────────
 function filterTable(mainTab, q) {
   const val = q.trim().toLowerCase();
@@ -873,10 +1123,10 @@ function clearSearch(mainTab) {
 // ── Tab navigation ────────────────────────────────────────────────────────────
 function showMainTab(name) {
   MAIN_TABS.forEach(t => {
-    document.getElementById('tab-'+t).classList.toggle('active', t===name);
-  });
-  document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', MAIN_TABS[i]===name);
+    const panel = document.getElementById('tab-'+t);
+    const btn   = document.getElementById('tabBtn-'+t);
+    if (panel) panel.classList.toggle('active', t===name);
+    if (btn)   btn.classList.toggle('active', t===name);
   });
   clearSearch(name);
 }
