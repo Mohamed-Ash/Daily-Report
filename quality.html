@@ -132,10 +132,17 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
 .stb-del:hover{color:var(--red)!important;background:var(--red-muted)}
 .ct-modal-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-family:inherit;font-size:13px}
 .ct-modal-select:focus{border-color:var(--teal);outline:none}
-.ct-type-row{display:flex;gap:16px;flex-wrap:wrap}
-.ct-type-lbl{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;color:var(--text-dim)}
-.ct-type-lbl input{accent-color:var(--teal);width:15px;height:15px}
-.ct-type-lbl.active{color:var(--teal)}
+.ct-type-chip{background:rgba(255,255,255,.03);border:1.5px solid var(--border);color:var(--text-dim);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;font-family:inherit;transition:all .18s;line-height:1.7}
+.ct-type-chip:hover{border-color:var(--teal-border);color:var(--text)}
+.ct-type-chip.active{background:var(--teal-muted);border-color:var(--teal);color:var(--teal)}
+.ct-parent-chip{background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:6px 14px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.ct-parent-chip:hover{border-color:var(--teal-border);color:var(--text)}
+.ct-parent-chip.active{background:var(--teal-muted);border-color:var(--teal);color:var(--teal)}
+.ct-ds-btn{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:12px;cursor:pointer;transition:all .15s;text-align:right;width:100%}
+.ct-ds-btn:hover{border-color:var(--teal-border);color:var(--text);background:rgba(14,168,152,.04)}
+.ct-ds-btn.active{background:var(--teal-muted);border-color:var(--teal);color:var(--teal)}
+.ct-ds-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .15s}
+.ct-ds-btn.active .ct-ds-dot{background:var(--teal)}
 
 /* ── Import ───────────────────────────────────────── */
 .add-bar-btns{display:flex;gap:6px;flex-wrap:wrap}
@@ -310,60 +317,53 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
 
 <!-- ── Custom Tab Modal ── -->
 <div id="custom-tab-modal" class="import-modal-overlay" onclick="if(event.target===this)closeCustomTabModal()">
-  <div class="import-modal">
+  <div class="import-modal" style="max-width:480px">
     <div class="import-modal-header">
       <span>＋ إضافة قسم جديد</span>
       <button class="import-close" onclick="closeCustomTabModal()">✕</button>
     </div>
-    <div class="import-modal-body">
+    <div class="import-modal-body" style="gap:18px">
+
+      <!-- Step 1: Type -->
       <div>
-        <div class="import-map-title">نوع القسم</div>
-        <div class="ct-type-row">
-          <label class="ct-type-lbl active" id="ctlbl-main">
-            <input type="radio" name="cttype" value="main" checked onchange="onCtTypeChange()"> قسم رئيسي جديد
-          </label>
-          <label class="ct-type-lbl" id="ctlbl-sub">
-            <input type="radio" name="cttype" value="sub" onchange="onCtTypeChange()"> تبويب داخل قسم موجود
-          </label>
+        <div class="import-map-title" style="margin-bottom:10px">① نوع القسم</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button id="ct-type-main" class="ct-type-chip active" onclick="setCtType('main')">
+            <span style="font-size:18px">📋</span><br>
+            <span style="font-size:12px;font-weight:700">قسم رئيسي جديد</span><br>
+            <span style="font-size:10px;color:var(--text-dim)">مثل AM / سعودية / مصر</span>
+          </button>
+          <button id="ct-type-sub" class="ct-type-chip" onclick="setCtType('sub')">
+            <span style="font-size:18px">📌</span><br>
+            <span style="font-size:12px;font-weight:700">تبويب داخل قسم</span><br>
+            <span style="font-size:10px;color:var(--text-dim)">يضاف لقسم موجود</span>
+          </button>
         </div>
       </div>
+
+      <!-- Step 2: Parent (sub only) -->
       <div id="ct-parent-row" style="display:none">
-        <div class="import-map-title">القسم الأب</div>
-        <select id="ct-parent" class="ct-modal-select">
-          <option value="am">👤 قسم الاكونت مانجر</option>
-          <option value="saudi">🇸🇦 قسم السعودية</option>
-          <option value="egypt">🇪🇬 قسم مصر</option>
-        </select>
+        <div class="import-map-title" style="margin-bottom:8px">② القسم الأب</div>
+        <div id="ct-parent-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
       </div>
+
+      <!-- Step 3: Name -->
       <div>
-        <div class="import-map-title">اسم القسم</div>
-        <input type="text" id="ct-label" class="ct-modal-select" placeholder="مثال: متابعة خاصة...">
+        <div class="import-map-title" style="margin-bottom:8px">② اسم القسم</div>
+        <input type="text" id="ct-label" class="note-inp" style="font-size:13px;padding:10px 12px;min-height:unset"
+          placeholder="مثال: متابعة خاصة، عملاء VIP...">
       </div>
+
+      <!-- Step 4: Data source -->
       <div>
-        <div class="import-map-title">مصدر البيانات</div>
-        <select id="ct-datakey" class="ct-modal-select">
-          <option value="">يدوي فقط (فارغ)</option>
-          <option value="recv">استلام المستندات — recv</option>
-          <option value="coll">التحصيل — coll</option>
-          <option value="licMonth">صدور الترخيص في الشهر — licMonth</option>
-          <option value="sijilSaudi">السجل التجاري السعودي — sijilSaudi</option>
-          <option value="sijilAmer">السجل وأمريكا مفتوحة — sijilAmer</option>
-          <option value="amer">أمريكا — amer</option>
-          <option value="completedMonth">المنتهون في الشهر — completedMonth</option>
-          <option value="completed112">المنتهون مصر — completed112</option>
-          <option value="p1Delayed">دفعة أولى متأخرة — p1Delayed</option>
-          <option value="p2">دفعة ثانية متأخرة — p2</option>
-          <option value="p3">دفعة ثالثة متأخرة — p3</option>
-          <option value="onHold">عملاء أون هولد — onHold</option>
-          <option value="overDue">التأخير في الأوفر فيو — overDue</option>
-          <option value="clientApproval">الموافقة على الأوفر فيو — clientApproval</option>
-          <option value="sijilDelay">تأخير السجل التجاري مصر — sijilDelay</option>
-        </select>
+        <div class="import-map-title" style="margin-bottom:8px">③ مصدر البيانات</div>
+        <div id="ct-datasource-btns" style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto;padding:2px"></div>
       </div>
-      <div class="import-footer" style="padding-top:0">
-        <button class="import-confirm-btn" onclick="confirmCreateCustomTab()">إنشاء القسم</button>
-        <span class="save-ind" id="ct-save-ind"></span>
-      </div>
+
+    </div>
+    <div class="import-footer">
+      <button class="import-confirm-btn" onclick="confirmCreateCustomTab()">إنشاء القسم</button>
+      <span class="save-ind" id="ct-save-ind"></span>
     </div>
   </div>
 </div>
@@ -1008,47 +1008,89 @@ async function deleteCustomTab(id) {
 }
 
 // ── Custom Tab Modal ──────────────────────────────────────────────────────────
-function openCustomTabModal() {
-  // Populate parent dropdown with custom main tabs too
-  const parentSel = document.getElementById('ct-parent');
-  const customMains = (_feedback['__custom_tabs__'] || []).filter(ct => ct.type === 'main');
-  const fixed = [
-    {value:'am',    label:'👤 قسم الاكونت مانجر'},
-    {value:'saudi', label:'🇸🇦 قسم السعودية'},
-    {value:'egypt', label:'🇪🇬 قسم مصر'},
-  ];
-  parentSel.innerHTML = [...fixed, ...customMains.map(ct => ({value:ct.id, label:ct.label}))]
-    .map(o => `<option value="${o.value}">${esc(o.label)}</option>`).join('');
+const CT_DATA_SOURCES = [
+  { value:'',              label:'يدوي فقط (بدون داتا)', icon:'📝' },
+  { value:'p1Delayed',     label:'دفعة أولى متأخرة',     icon:'💳' },
+  { value:'p2',            label:'دفعة ثانية متأخرة',    icon:'💰' },
+  { value:'p3',            label:'دفعة ثالثة متأخرة',    icon:'💸' },
+  { value:'onHold',        label:'عملاء أون هولد',       icon:'⏸️' },
+  { value:'recv',          label:'استلام المستندات',      icon:'📥' },
+  { value:'coll',          label:'التحصيل',               icon:'🏦' },
+  { value:'licMonth',      label:'صدور الترخيص في الشهر',icon:'📜' },
+  { value:'sijilSaudi',    label:'السجل التجاري السعودي', icon:'🇸🇦' },
+  { value:'sijilAmer',     label:'السجل وأمريكا مفتوحة', icon:'🌐' },
+  { value:'amer',          label:'أمريكا',                icon:'🇺🇸' },
+  { value:'overDue',       label:'التأخير في الأوفر فيو', icon:'⏰' },
+  { value:'clientApproval',label:'الموافقة على الأوفر فيو',icon:'✍️'},
+  { value:'sijilDelay',    label:'تأخير السجل مصر',       icon:'🗂️' },
+  { value:'completedMonth',label:'المنتهون في الشهر',     icon:'✅' },
+  { value:'completed112',  label:'المنتهون مصر',          icon:'🇪🇬' },
+];
 
-  // Reset form
-  document.querySelector('input[name="cttype"][value="main"]').checked = true;
-  document.getElementById('ct-parent-row').style.display = 'none';
+let _ctType = 'main', _ctParent = 'am', _ctDataKey = '';
+
+function openCustomTabModal() {
+  _ctType = 'main'; _ctParent = 'am'; _ctDataKey = '';
+
+  // Parent chips
+  const customMains = (_feedback['__custom_tabs__'] || []).filter(ct => ct.type === 'main');
+  const parents = [
+    {value:'am', label:'👤 AM'}, {value:'saudi', label:'🇸🇦 سعودية'}, {value:'egypt', label:'🇪🇬 مصر'},
+    ...customMains.map(ct => ({value:ct.id, label:ct.label}))
+  ];
+  document.getElementById('ct-parent-btns').innerHTML = parents.map(p =>
+    `<button class="ct-parent-chip${p.value===_ctParent?' active':''}" onclick="setCtParent('${p.value}',this)">${p.label}</button>`
+  ).join('');
+
+  // Data source buttons
+  document.getElementById('ct-datasource-btns').innerHTML = CT_DATA_SOURCES.map(s =>
+    `<button class="ct-ds-btn${s.value===_ctDataKey?' active':''}" onclick="setCtDataKey('${s.value}',this)">
+      <span class="ct-ds-dot"></span><span>${s.icon}</span><span>${s.label}</span>
+    </button>`
+  ).join('');
+
+  // Reset
+  setCtType('main');
   document.getElementById('ct-label').value = '';
-  document.getElementById('ct-datakey').value = '';
   document.getElementById('ct-save-ind').textContent = '';
-  document.getElementById('ctlbl-main').classList.add('active');
-  document.getElementById('ctlbl-sub').classList.remove('active');
   document.getElementById('custom-tab-modal').classList.add('open');
-  setTimeout(() => document.getElementById('ct-label').focus(), 80);
+  setTimeout(() => document.getElementById('ct-label').focus(), 100);
 }
 
 function closeCustomTabModal() {
   document.getElementById('custom-tab-modal').classList.remove('open');
 }
 
-function onCtTypeChange() {
-  const isSub = document.querySelector('input[name="cttype"]:checked').value === 'sub';
-  document.getElementById('ct-parent-row').style.display = isSub ? 'block' : 'none';
-  document.getElementById('ctlbl-main').classList.toggle('active', !isSub);
-  document.getElementById('ctlbl-sub').classList.toggle('active', isSub);
+function setCtType(type) {
+  _ctType = type;
+  document.getElementById('ct-type-main').classList.toggle('active', type==='main');
+  document.getElementById('ct-type-sub').classList.toggle('active', type==='sub');
+  document.getElementById('ct-parent-row').style.display = type==='sub' ? 'block' : 'none';
+  // Update step numbers
+  document.querySelectorAll('#custom-tab-modal .import-map-title').forEach((el, i) => {
+    const nums = type==='sub' ? ['①','②','③','④'] : ['①','②','③'];
+    if (el.textContent.match(/^[①②③④]/)) el.textContent = (nums[i]||'') + el.textContent.slice(1);
+  });
+}
+
+function setCtParent(val, btn) {
+  _ctParent = val;
+  document.querySelectorAll('#ct-parent-btns .ct-parent-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setCtDataKey(val, btn) {
+  _ctDataKey = val;
+  document.querySelectorAll('#ct-datasource-btns .ct-ds-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 }
 
 async function confirmCreateCustomTab() {
-  const type     = document.querySelector('input[name="cttype"]:checked').value;
-  const label    = document.getElementById('ct-label').value.trim();
-  const dataKey  = document.getElementById('ct-datakey').value || null;
-  const parentTab = type === 'sub' ? document.getElementById('ct-parent').value : null;
-  const si       = document.getElementById('ct-save-ind');
+  const type      = _ctType;
+  const label     = document.getElementById('ct-label').value.trim();
+  const dataKey   = _ctDataKey || null;
+  const parentTab = type === 'sub' ? _ctParent : null;
+  const si        = document.getElementById('ct-save-ind');
 
   if (!label) {
     document.getElementById('ct-label').focus();
