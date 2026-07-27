@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -178,7 +178,7 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
       التأخير في الأوفر فيو <span class="stc" id="stc-overDue">—</span>
     </button>
     <button class="sub-tab-btn" onclick="showSubTab('saudi','clientApproval')">
-      موافقة العميل على الأوفر فيو <span class="stc" id="stc-clientApproval">—</span>
+      الفرق بين تسليم السجل و الموافقة على الأوفر فيو <span class="stc" id="stc-clientApproval">—</span>
     </button>
   </div>
   <div id="sub-saudi-overDue"        class="sub-panel active"></div>
@@ -196,9 +196,7 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
     </button>
   </div>
   <div id="sub-egypt-sijilDelay" class="sub-panel active"></div>
-  <div id="sub-egypt-sahayef"    class="sub-panel">
-    <div class="placeholder-panel">⏳ قيد الإعداد — سيتم تفعيل هذا القسم قريباً</div>
-  </div>
+  <div id="sub-egypt-sahayef"    class="sub-panel"></div>
 </div>
 
 <div id="page-loading" class="page-loading">⏳ جاري تحميل البيانات...</div>
@@ -248,8 +246,9 @@ const PANEL_MAP = {
   p2:             { mainTab:'am',    label:'الدفعة الثانية المتأخرة' },
   p3:             { mainTab:'am',    label:'الدفعة الثالثة المتأخرة' },
   overDue:        { mainTab:'saudi', label:'التأخير في الأوفر فيو' },
-  clientApproval: { mainTab:'saudi', label:'موافقة العميل على الأوفر فيو' },
+  clientApproval: { mainTab:'saudi', label:'الفرق بين تسليم السجل و الموافقة على الأوفر فيو' },
   sijilDelay:     { mainTab:'egypt', label:'التأخير في تسليم السجل التجاري' },
+  sahayef:        { mainTab:'egypt', label:'التأخير في الصحايف' },
 };
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -276,6 +275,7 @@ async function loadAll() {
     renderPanel('saudi', 'overDue');
     renderPanel('saudi', 'clientApproval');
     renderPanel('egypt', 'sijilDelay');
+    renderPanel('egypt', 'sahayef');
 
   } catch(e) {
     document.getElementById('page-loading').textContent = '❌ خطأ: ' + e.message;
