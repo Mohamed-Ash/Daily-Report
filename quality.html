@@ -114,6 +114,42 @@ tbody tr:hover td{background:rgba(14,168,152,.02)}
 .placeholder-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:13px;padding:48px;text-align:center;color:var(--text-dim);font-size:13px}
 .page-loading{text-align:center;color:var(--text-dim);padding:60px;font-size:14px}
 footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px}
+
+/* ── Import ───────────────────────────────────────── */
+.add-bar-btns{display:flex;gap:6px;flex-wrap:wrap}
+.import-btn{background:none;border:1px dashed var(--teal-border);color:var(--text-dim);padding:7px 14px;border-radius:8px;font-family:inherit;font-size:11px;cursor:pointer;transition:all .15s;flex:1;text-align:center}
+.import-btn:hover{border-color:var(--teal);color:var(--teal)}
+.add-manual-toggle{flex:1}
+.import-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;align-items:center;justify-content:center;padding:16px}
+.import-modal-overlay.open{display:flex}
+.import-modal{background:var(--bg-card);border:1px solid var(--teal-border);border-radius:16px;width:100%;max-width:600px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.import-modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
+.import-modal-header span{font-size:14px;font-weight:900;color:var(--teal)}
+.import-close{background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:4px 8px;border-radius:6px}
+.import-close:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.import-modal-body{padding:18px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.import-file-btn{display:block;background:var(--teal-muted);border:1px dashed var(--teal-border);color:var(--teal);padding:12px;border-radius:10px;text-align:center;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s}
+.import-file-btn:hover{background:rgba(14,168,152,.18)}
+.import-or{text-align:center;color:var(--text-dim);font-size:11px;position:relative}
+.import-or::before,.import-or::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.import-or::before{right:0}.import-or::after{left:0}
+.import-paste-area{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:monospace;font-size:11px;resize:vertical;min-height:80px;direction:ltr}
+.import-paste-area:focus{border-color:var(--teal);outline:none}
+.import-parse-btn{background:var(--teal-muted);border:1px solid var(--teal-border);color:var(--teal);padding:7px 18px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.import-parse-btn:hover{background:rgba(14,168,152,.2)}
+.import-map-title{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:8px}
+.import-map-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:10px}
+.import-map-row label{font-size:12px;color:var(--text-dim);flex:1}
+.import-map-row select{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:7px;font-family:inherit;font-size:12px;min-width:160px}
+.import-map-row select:focus{border-color:var(--gold);outline:none}
+.import-preview-title{font-size:11px;font-weight:700;color:var(--text-dim);margin-bottom:7px}
+.import-preview-table{width:100%;border-collapse:collapse;font-size:11px}
+.import-preview-table th{background:rgba(201,169,97,.08);padding:6px 10px;text-align:right;color:var(--gold);border-bottom:1px solid var(--border)}
+.import-preview-table td{padding:5px 10px;border-bottom:1px solid rgba(201,169,97,.06);color:var(--text)}
+.import-footer{display:flex;align-items:center;gap:12px;padding-top:4px;flex-shrink:0}
+.import-confirm-btn{background:var(--teal);color:#000;border:none;padding:9px 22px;border-radius:9px;font-family:inherit;font-size:13px;font-weight:900;cursor:pointer}
+.import-confirm-btn:hover{background:#0cc8b5}
+.import-confirm-btn:disabled{opacity:.4;cursor:default}
 </style>
 </head>
 <body>
@@ -197,6 +233,34 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
   </div>
   <div id="sub-egypt-sijilDelay" class="sub-panel active"></div>
   <div id="sub-egypt-sahayef"    class="sub-panel"></div>
+</div>
+
+<!-- ── Import Modal ── -->
+<div id="import-modal" class="import-modal-overlay" onclick="if(event.target===this)closeImportModal()">
+  <div class="import-modal">
+    <div class="import-modal-header">
+      <span>📥 استيراد من ملف</span>
+      <button class="import-close" onclick="closeImportModal()">✕</button>
+    </div>
+    <div class="import-modal-body">
+      <label class="import-file-btn">
+        📂 اختر ملف CSV أو Excel
+        <input type="file" id="import-file" accept=".csv,.tsv,.txt,.xlsx,.xls" onchange="handleImportFile(event)" style="display:none">
+      </label>
+      <div class="import-or">أو</div>
+      <div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:5px">الصق الخلايا مباشرةً من Excel:</div>
+        <textarea class="import-paste-area" id="import-paste" placeholder="انسخ الخلايا من Excel والصقها هنا..."></textarea>
+        <button class="import-parse-btn" onclick="handleImportPaste()" style="margin-top:6px">تحليل البيانات</button>
+      </div>
+      <div id="import-mapping" style="display:none"></div>
+      <div id="import-preview"></div>
+      <div class="import-footer">
+        <button id="import-confirm-btn" class="import-confirm-btn" onclick="confirmImport()" disabled>استيراد</button>
+        <span class="save-ind" id="import-save-ind"></span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="page-loading" class="page-loading">⏳ جاري تحميل البيانات...</div>
@@ -353,7 +417,10 @@ function renderPanel(mainTab, key) {
       <tbody>${emptyRow}${autoTbody}${manualTbody}</tbody>
     </table></div>
     <div class="add-manual-bar">
-      <button class="add-manual-toggle" onclick="toggleManualForm('${esc(key)}')">＋ إضافة حالة يدوياً</button>
+      <div class="add-bar-btns">
+        <button class="add-manual-toggle" onclick="toggleManualForm('${esc(key)}')">＋ إضافة حالة يدوياً</button>
+        <button class="import-btn" onclick="openImportModal('${esc(key)}','${esc(mainTab)}')">📥 استيراد من ملف</button>
+      </div>
       <div class="manual-form" id="mf-${esc(key)}">
         <div class="manual-inputs">
           <input class="manual-inp" id="mf-name-${esc(key)}" placeholder="ID أو اسم العميل">
@@ -561,6 +628,178 @@ function autoH(el){ el.style.height='auto'; el.style.height=el.scrollHeight+'px'
 function fmtDate(d){ if(!d)return''; const p=d.split('-'); return (p[2]||'??')+'/'+(p[1]||'??'); }
 function b64dec(b){ return decodeURIComponent(escape(atob(b.replace(/\s/g,'')))); }
 function b64enc(s){ return btoa(unescape(encodeURIComponent(s))); }
+
+// ── Import ────────────────────────────────────────────────────────────────────
+let _importKey = null, _importMainTab = null, _importRows = [], _importHeaders = [];
+
+function openImportModal(key, mainTab) {
+  _importKey = key; _importMainTab = mainTab;
+  _importRows = []; _importHeaders = [];
+  document.getElementById('import-file').value = '';
+  document.getElementById('import-paste').value = '';
+  document.getElementById('import-mapping').style.display = 'none';
+  document.getElementById('import-mapping').innerHTML = '';
+  document.getElementById('import-preview').innerHTML = '';
+  document.getElementById('import-confirm-btn').disabled = true;
+  document.getElementById('import-save-ind').textContent = '';
+  document.getElementById('import-save-ind').className = 'save-ind';
+  document.getElementById('import-modal').classList.add('open');
+}
+
+function closeImportModal() {
+  document.getElementById('import-modal').classList.remove('open');
+}
+
+function parseDelimited(text) {
+  const lines = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(l => l.trim());
+  if (!lines.length) return [];
+  const sep = lines[0].includes('\t') ? '\t' : ',';
+  return lines.map(line => {
+    const cells = []; let i = 0;
+    while (i <= line.length) {
+      if (i === line.length) { cells.push(''); break; }
+      if (line[i] === '"') {
+        let j = i+1, val = '';
+        while (j < line.length) {
+          if (line[j]==='"' && line[j+1]==='"') { val+='"'; j+=2; }
+          else if (line[j]==='"') { j++; break; }
+          else { val += line[j++]; }
+        }
+        cells.push(val.trim()); i=j; if (line[i]===sep) i++;
+      } else {
+        const end = line.indexOf(sep, i);
+        if (end===-1) { cells.push(line.slice(i).trim()); break; }
+        cells.push(line.slice(i,end).trim()); i=end+1;
+      }
+    }
+    return cells;
+  });
+}
+
+function processImportData(parsed) {
+  if (!parsed || !parsed.length) {
+    document.getElementById('import-preview').innerHTML = '<p style="color:var(--red);font-size:12px">الملف فارغ أو غلط</p>';
+    return;
+  }
+  _importHeaders = parsed[0].map((h,i) => h || 'عمود '+(i+1));
+  _importRows = parsed.slice(1).filter(r => r.some(c => c));
+  renderImportMapping();
+  renderImportPreview();
+}
+
+function handleImportFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = evt => processImportData(parseDelimited(evt.target.result));
+  reader.readAsText(file, 'UTF-8');
+}
+
+function handleImportPaste() {
+  const text = document.getElementById('import-paste').value.trim();
+  if (!text) return;
+  processImportData(parseDelimited(text));
+}
+
+function autoDetectCol(headers, kws) {
+  for (const k of kws) {
+    const idx = headers.findIndex(h => h.toLowerCase().includes(k));
+    if (idx >= 0) return idx;
+  }
+  return -1;
+}
+
+function renderImportMapping() {
+  const h = _importHeaders;
+  const nameIdx  = Math.max(0,  autoDetectCol(h, ['name','اسم','id','رقم','مشروع','project','client']));
+  const ownerIdx = autoDetectCol(h, ['owner','مانجر','account','am','مسؤول','assigned']);
+  const noteIdx  = autoDetectCol(h, ['note','ملاحظة','feedback','تعليق','متابعة','comment']);
+
+  const makeSelect = (id, label, selected) => {
+    const opts = [['(لا شيء)',-1], ...h.map((x,i) => [x,i])]
+      .map(([lbl,val]) => `<option value="${val}" ${val===selected?'selected':''}>${esc(lbl)}</option>`).join('');
+    return `<div class="import-map-row"><label>${label}</label><select id="${id}" onchange="renderImportPreview()">${opts}</select></div>`;
+  };
+
+  document.getElementById('import-mapping').innerHTML = `
+    <div class="import-map-title">خريطة الأعمدة</div>
+    ${makeSelect('imp-name',  'اسم المشروع / ID', nameIdx)}
+    ${makeSelect('imp-owner', 'الاكونت مانجر (اختياري)', ownerIdx)}
+    ${makeSelect('imp-note',  'ملاحظة / فيدباك (اختياري)', noteIdx)}
+  `;
+  document.getElementById('import-mapping').style.display = 'block';
+  document.getElementById('import-confirm-btn').disabled = false;
+}
+
+function renderImportPreview() {
+  const nc = parseInt(document.getElementById('imp-name')?.value ?? 0);
+  const oc = parseInt(document.getElementById('imp-owner')?.value ?? -1);
+  const fc = parseInt(document.getElementById('imp-note')?.value ?? -1);
+  const preview = _importRows.slice(0,5);
+  const rows = preview.map((r,i) => {
+    const name  = nc>=0 ? esc(r[nc]||'') : '<span style="color:var(--text-dim)">—</span>';
+    const owner = oc>=0 ? esc(r[oc]||'') : '<span style="color:var(--text-dim)">—</span>';
+    const note  = fc>=0 ? esc(r[fc]||'') : '<span style="color:var(--text-dim)">—</span>';
+    return `<tr><td>${i+1}</td><td>${name||'<span style="color:var(--text-dim)">—</span>'}</td><td>${owner||'—'}</td><td>${note||'—'}</td></tr>`;
+  }).join('');
+  const extra = _importRows.length > 5 ? `<p style="color:var(--text-dim);font-size:11px;margin-top:5px">... و ${_importRows.length-5} صف آخر</p>` : '';
+  document.getElementById('import-preview').innerHTML = `
+    <div class="import-preview-title">معاينة — ${_importRows.length} صف</div>
+    <div style="overflow-x:auto"><table class="import-preview-table">
+      <thead><tr><th>#</th><th>الاسم/ID</th><th>الاكونت مانجر</th><th>الملاحظة</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>${extra}`;
+}
+
+async function confirmImport() {
+  const nc = parseInt(document.getElementById('imp-name')?.value ?? 0);
+  const oc = parseInt(document.getElementById('imp-owner')?.value ?? -1);
+  const fc = parseInt(document.getElementById('imp-note')?.value ?? -1);
+  if (nc < 0) { document.getElementById('import-save-ind').textContent='اختر عمود الاسم'; return; }
+
+  const btn = document.getElementById('import-confirm-btn');
+  const si  = document.getElementById('import-save-ind');
+  btn.disabled = true; si.className='save-ind saving'; si.textContent='جاري الاستيراد...';
+
+  try {
+    const today   = new Date().toISOString();
+    const entries = _importRows.map(r => ({
+      name: (r[nc]||'').trim(),
+      owner: oc>=0 ? (r[oc]||'').trim() : '',
+      addedAt: today
+    })).filter(e => e.name);
+
+    const getR    = await ghGet(FB_FILE);
+    const getData = await getR.json();
+    const remote  = JSON.parse(b64dec(getData.content));
+    const mkey    = '__manual__::' + _importKey;
+    remote[mkey]  = [...entries, ...(remote[mkey]||[])];
+
+    if (fc >= 0) {
+      _importRows.forEach(r => {
+        const name = (r[nc]||'').trim();
+        const note = (r[fc]||'').trim();
+        if (!name || !note) return;
+        const fkey = _importKey + '::' + name;
+        const existing = remote[fkey] || {};
+        const notes = existing.notes || [];
+        notes.unshift({ text: note, date: today.slice(0,10), addedAt: today });
+        remote[fkey] = { notes };
+      });
+    }
+
+    _feedback = remote;
+    await ghPut(FB_FILE, remote, getData.sha, 'quality: import ' + entries.length + ' entries to ' + _importKey);
+
+    si.className='save-ind saved'; si.textContent='✓ تم استيراد ' + entries.length + ' مدخل';
+    setTimeout(() => { closeImportModal(); renderPanel(_importMainTab, _importKey); }, 1500);
+
+  } catch(e) {
+    console.error('import:', e);
+    si.className='save-ind err'; si.textContent='✗ خطأ في الحفظ';
+    btn.disabled = false;
+  }
+}
 
 // ── Tab navigation ────────────────────────────────────────────────────────────
 function showMainTab(name) {
