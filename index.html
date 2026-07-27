@@ -373,7 +373,7 @@ async function loadSalesTable() {
       if ((rows[i][0] || '').includes('اسم السيلز')) { dataStart = i + 1; break; }
     }
     let html = '<table class="sales-table"><thead><tr><th style="width:36px">#</th><th>اسم السيلز</th><th>أقل من 5k</th><th>أكتر من 5k</th><th>الإجمالي</th></tr></thead><tbody>';
-    let idx = 0;
+    let idx = 0, totalBig = 0;
     for (let i = dataStart; i < rows.length; i++) {
       const row = rows[i];
       const name = (row[0] || '').trim();
@@ -382,6 +382,7 @@ async function loadSalesTable() {
       const big   = parseInt((row[2] || '').replace(/[^\d]/g, '')) || 0;
       const total = small + big;
       const isTotal = name.includes('الاجمالي') || name.includes('الإجمالي');
+      if (isTotal) { totalBig = big; }
       const cls = isTotal ? ' class="sales-total-row"' : '';
       const num = isTotal ? '' : ++idx;
       const esc = name.replace(/&/g,'&amp;').replace(/</g,'&lt;');
@@ -389,6 +390,8 @@ async function loadSalesTable() {
     }
     html += '</tbody></table>';
     wrap.innerHTML = html;
+    const nc = document.getElementById('kv-newClients');
+    if (nc) nc.textContent = totalBig;
     if (status) status.textContent = '';
   } catch(e) {
     wrap.innerHTML = '<div style="color:var(--red);padding:20px;text-align:center;font-size:12px">❌ خطأ في تحميل بيانات السيلز</div>';
@@ -477,9 +480,9 @@ window.addEventListener('DOMContentLoaded', () => { initHistory(); loadSalesTabl
     <div class="kpi-top"><div class="kpi-label">تأخير تسليم السجل التجاري</div><div class="kpi-icon">🗂️</div></div>
     <div class="kpi-value" id="kv-sijilDelay">2</div>
   </div>
-  <div class="kpi-card c-green" onclick="scrollToDetail('sijilAmer')">
-    <div class="kpi-top"><div class="kpi-label">السجل جاهز وامريكا مفتوحة</div><div class="kpi-icon">🌐</div></div>
-    <div class="kpi-value" id="kv-sijilAmer">3</div>
+  <div class="kpi-card c-green">
+    <div class="kpi-top"><div class="kpi-label">العملاء الجدد في الشهر</div><div class="kpi-icon">🆕</div></div>
+    <div class="kpi-value" id="kv-newClients">—</div>
   </div>
 </div>
 
