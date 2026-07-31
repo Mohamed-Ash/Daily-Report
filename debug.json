@@ -1,9 +1,9 @@
 {
-  "ts": "2026-07-30 14:00",
+  "ts": "2026-07-31 08:00",
   "total": 936,
-  "active": 204,
+  "active": 203,
   "onHold": 29,
-  "completed": 678,
+  "completed": 679,
   "cacheSize": 922,
   "metrics": {
     "p2": 44,
@@ -17,7 +17,7 @@
     "sijilDelay": 1,
     "sijilAmer": 1,
     "amer": 1,
-    "completedMonth": 50,
+    "completedMonth": 51,
     "completed112": 11,
     "onHold": 29,
     "p1Delayed": 60
