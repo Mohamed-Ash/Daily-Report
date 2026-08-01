@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-31 14:00",
+  "ts": "2026-08-01 08:00",
   "total": 936,
   "active": 203,
   "onHold": 29,
@@ -10,17 +10,17 @@
     "p3": 33,
     "recv": 1,
     "coll": 0,
-    "licMonth": 61,
+    "licMonth": 0,
     "sijilSaudi": 81,
     "clientApproval": 1,
     "overDue": 1,
     "sijilDelay": 1,
     "sijilAmer": 1,
     "amer": 1,
-    "completedMonth": 51,
-    "completed112": 11,
+    "completedMonth": 0,
+    "completed112": 0,
     "onHold": 29,
-    "p1Delayed": 60
+    "p1Delayed": 59
   },
   "p2_sample": [
     "1021-115-1",
