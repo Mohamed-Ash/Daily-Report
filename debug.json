@@ -1,10 +1,10 @@
 {
-  "ts": "2026-08-04 14:00",
-  "total": 953,
-  "active": 210,
+  "ts": "2026-08-05 08:00",
+  "total": 958,
+  "active": 215,
   "onHold": 29,
   "completed": 689,
-  "cacheSize": 940,
+  "cacheSize": 945,
   "metrics": {
     "p2": 36,
     "p3": 24,
