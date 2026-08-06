@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -283,6 +283,8 @@ async function initHistory() {
   await loadHistPos(-1);
 }
 
+window.addEventListener('DOMContentLoaded', () => { initHistory(); });
+
 function updateHistNav() {
   const lbl = document.getElementById('hist-label');
   const tag = document.getElementById('hist-tag');
@@ -316,6 +318,7 @@ async function loadHistPos(pos) {
         document.getElementById('upd-at').textContent = h.updatedAt || _histIndex[0];
       } catch(e) { console.error('live load failed', e); }
     }
+    loadLiveSalesTables();
     updateHistNav(); return;
   }
   const dateStr = _histIndex[pos];
@@ -328,6 +331,7 @@ async function loadHistPos(pos) {
     renderP1Delayed((h.details || {}).p1Delayed, (h.metrics || {}).p1Delayed);
     document.getElementById('upd-at').textContent = h.updatedAt || dateStr;
   } catch { console.error('failed to load history', dateStr); }
+  loadArchivedSalesTables(dateStr);
   updateHistNav();
 }
 
@@ -379,6 +383,61 @@ function parseCsvProper(text) {
   return rows;
 }
 
+function renderSalesTable(wrap, rows, totalBig) {
+  let html = '<table class="sales-table"><thead><tr><th style="width:36px">#</th><th>اسم السيلز</th><th>أقل من 5k</th><th>أكتر من 5k</th><th>الإجمالي</th></tr></thead><tbody>';
+  let idx = 0;
+  rows.forEach(r => {
+    const cls = r.isTotal ? ' class="sales-total-row"' : '';
+    const num = r.isTotal ? '' : ++idx;
+    const esc = (r.name || '').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    html += `<tr${cls}><td>${num}</td><td>${esc}</td><td>${r.small}</td><td>${r.big}</td><td>${r.total}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = '<div class="tbl-scroll">' + html + '</div><div class="scroll-bar-wrap"><div class="scroll-track"><div class="scroll-thumb"></div></div></div>';
+  initScrollBar(wrap.querySelector('.tbl-scroll'), wrap);
+  const nc = document.getElementById('kv-newClients');
+  if (nc) nc.textContent = totalBig;
+}
+
+function renderGenericTable(wrap, hdrs, rows) {
+  let html = '<table class="sales-table"><thead><tr>';
+  hdrs.forEach((h, i) => {
+    const last = i === hdrs.length - 1;
+    html += '<th style="' + (i===0?'text-align:right;':'') + (last?'color:var(--gold)':'') + '">' + (h||'') + '</th>';
+  });
+  html += '</tr></thead><tbody>';
+  rows.forEach(row => {
+    html += '<tr>';
+    row.forEach((c, j) => {
+      const last = j === row.length - 1;
+      html += '<td style="' + (j===0?'text-align:right;':'') + (last?'color:var(--gold);font-weight:700;':'') + '">' + (c||'') + '</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = '<div class="tbl-scroll">' + html + '</div><div class="scroll-bar-wrap"><div class="scroll-track"><div class="scroll-thumb"></div></div></div>';
+  initScrollBar(wrap.querySelector('.tbl-scroll'), wrap);
+}
+
+function renderTeamsTable(wrap, hdrs, vals) {
+  let html = '<table class="sales-table" style="table-layout:fixed"><thead><tr>';
+  hdrs.forEach((h, i) => {
+    const last = i === hdrs.length - 1;
+    html += '<th style="text-align:center;font-size:12px;' + (last ? 'color:var(--gold);width:90px' : '') + '">' + h + '</th>';
+  });
+  html += '</tr></thead><tbody><tr>';
+  vals.forEach((v, i) => {
+    const last = i === vals.length - 1;
+    html += '<td style="text-align:center;font-size:26px;font-weight:900;padding:18px 12px;' + (last ? 'color:var(--gold)' : '') + '">' + v + '</td>';
+  });
+  html += '</tr></tbody></table>';
+  wrap.innerHTML = '<div class="tbl-scroll">' + html + '</div><div class="scroll-bar-wrap"><div class="scroll-track"><div class="scroll-thumb"></div></div></div>';
+  initScrollBar(wrap.querySelector('.tbl-scroll'), wrap);
+}
+
+function salesTableFail(wrap) { wrap.innerHTML = '<div style="color:var(--red);padding:20px;text-align:center;font-size:12px">❌ خطأ في تحميل بيانات السيلز</div>'; }
+function genericTableFail(wrap) { wrap.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:12px">فشل التحميل</div>'; }
+
 async function loadSalesTable() {
   const wrap = document.getElementById('sales-table-wrap');
   const status = document.getElementById('sales-status');
@@ -391,8 +450,7 @@ async function loadSalesTable() {
     for (let i = 0; i < Math.min(rows.length, 5); i++) {
       if ((rows[i][0] || '').includes('اسم السيلز')) { dataStart = i + 1; break; }
     }
-    let html = '<table class="sales-table"><thead><tr><th style="width:36px">#</th><th>اسم السيلز</th><th>أقل من 5k</th><th>أكتر من 5k</th><th>الإجمالي</th></tr></thead><tbody>';
-    let idx = 0, totalBig = 0;
+    const salesRows = []; let totalBig = 0;
     for (let i = dataStart; i < rows.length; i++) {
       const row = rows[i];
       const name = (row[0] || '').trim();
@@ -401,25 +459,16 @@ async function loadSalesTable() {
       const big   = parseInt((row[2] || '').replace(/[^\d]/g, '')) || 0;
       const total = small + big;
       const isTotal = name.includes('الاجمالي') || name.includes('الإجمالي');
-      if (isTotal) { totalBig = big; }
-      const cls = isTotal ? ' class="sales-total-row"' : '';
-      const num = isTotal ? '' : ++idx;
-      const esc = name.replace(/&/g,'&amp;').replace(/</g,'&lt;');
-      html += `<tr${cls}><td>${num}</td><td>${esc}</td><td>${small}</td><td>${big}</td><td>${total}</td></tr>`;
+      if (isTotal) totalBig = big;
+      salesRows.push({ name, small, big, total, isTotal });
     }
-    html += '</tbody></table>';
-    wrap.innerHTML = '<div class="tbl-scroll">' + html + '</div><div class="scroll-bar-wrap"><div class="scroll-track"><div class="scroll-thumb"></div></div></div>';
-    initScrollBar(wrap.querySelector('.tbl-scroll'), wrap);
-    const nc = document.getElementById('kv-newClients');
-    if (nc) nc.textContent = totalBig;
+    renderSalesTable(wrap, salesRows, totalBig);
     if (status) status.textContent = '';
   } catch(e) {
-    wrap.innerHTML = '<div style="color:var(--red);padding:20px;text-align:center;font-size:12px">❌ خطأ في تحميل بيانات السيلز</div>';
+    salesTableFail(wrap);
     if (status) status.textContent = '';
   }
 }
-
-window.addEventListener('DOMContentLoaded', () => { initHistory(); loadSalesTable(); loadBranchTable(); loadCompletedTable(); loadTeamsTable(); });
 
 async function loadBranchTable() {
   const wrap = document.getElementById('branch-table-wrap');
@@ -430,26 +479,9 @@ async function loadBranchTable() {
     const rows = parseCsvProper(await r.text());
     if (rows.length < 1) throw new Error();
     const hdrs = rows[0];
-    let html = '<table class="sales-table"><thead><tr>';
-    hdrs.forEach((h, i) => {
-      const last = i === hdrs.length - 1;
-      html += '<th style="' + (i===0?'text-align:right;':'') + (last?'color:var(--gold)':'') + '">' + (h||'') + '</th>';
-    });
-    html += '</tr></thead><tbody>';
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      if (!row.some(c => c.trim())) continue;
-      html += '<tr>';
-      row.forEach((c, j) => {
-        const last = j === row.length - 1;
-        html += '<td style="' + (j===0?'text-align:right;':'') + (last?'color:var(--gold);font-weight:700;':'') + '">' + (c||'') + '</td>';
-      });
-      html += '</tr>';
-    }
-    html += '</tbody></table>';
-    wrap.innerHTML = '<div class="tbl-scroll">' + html + '</div><div class="scroll-bar-wrap"><div class="scroll-track"><div class="scroll-thumb"></div></div></div>';
-    initScrollBar(wrap.querySelector('.tbl-scroll'), wrap);
-  } catch { wrap.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:12px">فشل التحميل</div>'; }
+    const dataRows = rows.slice(1).filter(row => row.some(c => c.trim()));
+    renderGenericTable(wrap, hdrs, dataRows);
+  } catch { genericTableFail(wrap); }
 }
 
 async function loadCompletedTable() {
@@ -461,26 +493,9 @@ async function loadCompletedTable() {
     const rows = parseCsvProper(await r.text());
     if (rows.length < 1) throw new Error();
     const hdrs = rows[0];
-    let html = '<table class="sales-table"><thead><tr>';
-    hdrs.forEach((h, i) => {
-      const last = i === hdrs.length - 1;
-      html += '<th style="' + (i===0?'text-align:right;':'') + (last?'color:var(--gold)':'') + '">' + (h||'') + '</th>';
-    });
-    html += '</tr></thead><tbody>';
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      if (!row.some(c => c.trim())) continue;
-      html += '<tr>';
-      row.forEach((c, j) => {
-        const last = j === row.length - 1;
-        html += '<td style="' + (j===0?'text-align:right;':'') + (last?'color:var(--gold);font-weight:700;':'') + '">' + (c||'') + '</td>';
-      });
-      html += '</tr>';
-    }
-    html += '</tbody></table>';
-    wrap.innerHTML = '<div class="tbl-scroll">' + html + '</div><div class="scroll-bar-wrap"><div class="scroll-track"><div class="scroll-thumb"></div></div></div>';
-    initScrollBar(wrap.querySelector('.tbl-scroll'), wrap);
-  } catch { wrap.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:12px">فشل التحميل</div>'; }
+    const dataRows = rows.slice(1).filter(row => row.some(c => c.trim()));
+    renderGenericTable(wrap, hdrs, dataRows);
+  } catch { genericTableFail(wrap); }
 }
 
 function initScrollBar(scrollEl, wrapEl) {
@@ -506,31 +521,47 @@ async function loadTeamsTable() {
     const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/gviz/tq?tqx=out:csv&gid=1494121778&t=' + Date.now());
     if (!r.ok) throw new Error();
     const rows = parseCsvProper(await r.text());
-    // Team values are embedded in col indices 5,6,7,8 of the first row that has them
+    // Col indices 5-8 hold both a header-text row (team names) and a numbers row —
+    // only the numbers row qualifies, so require F/G to parse as numbers.
     let vals = null;
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
-      if (row.length >= 9 && row[5] && row[5].trim() && row[6] && row[6].trim()) {
-        vals = [row[5].trim(), row[6].trim(), row[7].trim(), row[8].trim()];
+      if (row.length < 9) continue;
+      const f = (row[5] || '').trim(), g = (row[6] || '').trim();
+      if (f !== '' && g !== '' && !isNaN(parseFloat(f)) && !isNaN(parseFloat(g))) {
+        vals = [f, g, (row[7] || '').trim(), (row[8] || '').trim()];
         break;
       }
     }
     if (!vals) throw new Error();
     const hdrs = ['نورا و منار ومحمد بيومي', 'ندي وعمر و اسراء احمد', 'رحمه وهبه و ابراهيم درويش', 'المجموع'];
-    let html = '<table class="sales-table" style="table-layout:fixed"><thead><tr>';
-    hdrs.forEach((h, i) => {
-      const last = i === hdrs.length - 1;
-      html += '<th style="text-align:center;font-size:12px;' + (last ? 'color:var(--gold);width:90px' : '') + '">' + h + '</th>';
-    });
-    html += '</tr></thead><tbody><tr>';
-    vals.forEach((v, i) => {
-      const last = i === vals.length - 1;
-      html += '<td style="text-align:center;font-size:26px;font-weight:900;padding:18px 12px;' + (last ? 'color:var(--gold)' : '') + '">' + v + '</td>';
-    });
-    html += '</tr></tbody></table>';
-    wrap.innerHTML = '<div class="tbl-scroll">' + html + '</div><div class="scroll-bar-wrap"><div class="scroll-track"><div class="scroll-thumb"></div></div></div>';
-    initScrollBar(wrap.querySelector('.tbl-scroll'), wrap);
-  } catch { wrap.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:12px">فشل التحميل</div>'; }
+    renderTeamsTable(wrap, hdrs, vals);
+  } catch { genericTableFail(wrap); }
+}
+
+// ── Sales-tables history (Sales / Branches / Completed+5K / Teams) ────────────
+function loadLiveSalesTables() {
+  loadSalesTable(); loadBranchTable(); loadCompletedTable(); loadTeamsTable();
+}
+
+async function loadArchivedSalesTables(dateStr) {
+  const salesWrap     = document.getElementById('sales-table-wrap');
+  const branchWrap     = document.getElementById('branch-table-wrap');
+  const completedWrap  = document.getElementById('completed-table-wrap');
+  const teamsWrap      = document.getElementById('teams-table-wrap');
+  const wraps = [salesWrap, branchWrap, completedWrap, teamsWrap].filter(Boolean);
+  try {
+    const r = await fetch('history/sales-' + dateStr + '.json?t=' + Date.now());
+    if (!r.ok) throw new Error('fetch failed');
+    const s = await r.json();
+    if (salesWrap)    renderSalesTable(salesWrap, s.sales.rows, s.sales.totalBig);
+    if (branchWrap)   renderGenericTable(branchWrap, s.branches.headers, s.branches.rows);
+    if (completedWrap) renderGenericTable(completedWrap, s.completed.headers, s.completed.rows);
+    if (teamsWrap)    renderTeamsTable(teamsWrap, s.teams.headers, s.teams.values);
+  } catch (e) {
+    const msg = '<div style="color:var(--text-dim);padding:20px;text-align:center;font-size:12px">📭 لا توجد بيانات مؤرشفة لهذا اليوم</div>';
+    wraps.forEach(w => { w.innerHTML = msg; });
+  }
 }
 </script>
 </head>
