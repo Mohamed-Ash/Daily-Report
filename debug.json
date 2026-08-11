@@ -1,26 +1,26 @@
 {
-  "ts": "2026-08-11 08:00",
-  "total": 978,
+  "ts": "2026-08-11 11:00",
+  "total": 979,
   "active": 232,
   "onHold": 29,
-  "completed": 692,
-  "cacheSize": 965,
+  "completed": 693,
+  "cacheSize": 967,
   "metrics": {
-    "p2": 47,
+    "p2": 46,
     "p3": 32,
-    "recv": 67,
-    "coll": 52,
+    "recv": 68,
+    "coll": 53,
     "licMonth": 11,
-    "sijilSaudi": 93,
+    "sijilSaudi": 92,
     "clientApproval": 11,
     "overDue": 1,
     "sijilDelay": 1,
     "sijilAmer": 5,
-    "amer": 21,
-    "completedMonth": 11,
+    "amer": 22,
+    "completedMonth": 12,
     "completed112": 2,
     "onHold": 29,
-    "p1Delayed": 68
+    "p1Delayed": 67
   },
   "p2_sample": [
     "1047-141-1",
@@ -37,11 +37,11 @@
     "997-114-1"
   ],
   "recv_sample": [
+    "1136-116-1",
+    "1136-116-1",
     "1149-113-1",
     "1148-113-1",
-    "1147-113-1",
-    "1145-113-1",
-    "1144-113-1"
+    "1147-113-1"
   ],
   "firstDone": null
 }
