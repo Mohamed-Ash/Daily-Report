@@ -442,7 +442,7 @@ async function loadSalesTable() {
   const wrap = document.getElementById('sales-table-wrap');
   const status = document.getElementById('sales-status');
   try {
-    const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/gviz/tq?tqx=out:csv&t=' + Date.now());
+    const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/export?format=csv&t=' + Date.now());
     if (!r.ok) throw new Error('fetch failed');
     const rows = parseCsvProper(await r.text());
     // Find the header row (contains "اسم السيلز") and start data from the next row
@@ -474,7 +474,7 @@ async function loadBranchTable() {
   const wrap = document.getElementById('branch-table-wrap');
   if (!wrap) return;
   try {
-    const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/gviz/tq?tqx=out:csv&gid=1078209926&t=' + Date.now());
+    const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/export?format=csv&gid=1078209926&t=' + Date.now());
     if (!r.ok) throw new Error();
     const rows = parseCsvProper(await r.text());
     if (rows.length < 1) throw new Error();
@@ -488,7 +488,7 @@ async function loadCompletedTable() {
   const wrap = document.getElementById('completed-table-wrap');
   if (!wrap) return;
   try {
-    const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/gviz/tq?tqx=out:csv&gid=699409480&t=' + Date.now());
+    const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/export?format=csv&gid=699409480&t=' + Date.now());
     if (!r.ok) throw new Error();
     const rows = parseCsvProper(await r.text());
     if (rows.length < 1) throw new Error();
@@ -518,7 +518,7 @@ async function loadTeamsTable() {
   const wrap = document.getElementById('teams-table-wrap');
   if (!wrap) return;
   try {
-    const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/gviz/tq?tqx=out:csv&gid=1494121778&t=' + Date.now());
+    const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/export?format=csv&gid=1494121778&t=' + Date.now());
     if (!r.ok) throw new Error();
     const rows = parseCsvProper(await r.text());
     // Col indices 5-8 hold both a header-text row (team names) and a numbers row —

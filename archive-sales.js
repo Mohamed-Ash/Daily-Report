@@ -46,7 +46,7 @@ function parseCsvProper(text) {
 }
 
 function gvizUrl(gid) {
-  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
   return gid ? `${base}&gid=${gid}` : base;
 }
 
