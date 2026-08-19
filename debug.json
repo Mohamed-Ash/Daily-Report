@@ -1,7 +1,7 @@
 {
-  "ts": "2026-08-19 08:41",
+  "ts": "2026-08-19 11:00",
   "total": 1003,
-  "active": 237,
+  "active": 236,
   "onHold": 32,
   "completed": 708,
   "cacheSize": 1020,
@@ -14,13 +14,13 @@
     "sijilSaudi": 103,
     "clientApproval": 14,
     "overDue": 0,
-    "sijilDelay": 1,
+    "sijilDelay": 2,
     "sijilAmer": 1,
     "amer": 6,
     "completedMonth": 25,
     "completed112": 4,
     "onHold": 32,
-    "p1Delayed": 63
+    "p1Delayed": 62
   },
   "p2_sample": [
     "1072-113-1",
