@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-22 08:00",
+  "ts": "2026-08-22 11:00",
   "total": 1008,
   "active": 240,
   "onHold": 33,
@@ -20,7 +20,7 @@
     "completedMonth": 25,
     "completed112": 4,
     "onHold": 33,
-    "p1Delayed": 60
+    "p1Delayed": 59
   },
   "p2_sample": [
     "1106-113-1",
