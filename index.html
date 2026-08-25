@@ -101,6 +101,8 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:12px}
 /* ── P1 password lock ── */
 .p1-secret{display:none}
 #p1-tbl.p1-unlocked .p1-secret{display:table-cell}
+#p1-tbl:not(.p1-unlocked) thead th:nth-child(n+5),
+#p1-tbl:not(.p1-unlocked) tbody td:nth-child(n+5){display:none}
 .p1-eye{background:none;border:none;cursor:pointer;font-size:15px;line-height:1;padding:2px 6px;opacity:.55;transition:opacity .2s;vertical-align:middle}
 .p1-eye:hover{opacity:1}
 #p1-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;align-items:center;justify-content:center}
@@ -312,12 +314,16 @@ async function loadHistPos(pos) {
     if (_histIndex.length > 0) {
       try {
         const r = await fetch('history/' + _histIndex[0] + '.json?t=' + Date.now());
+        if (!r.ok) throw new Error('not found');
         const h = await r.json();
         _Dcur = h.details || {};
         renderKPIs(h.metrics || {}); renderAM(h.amData || {active:{},onHold:{}}, h.details || {}); renderDetails(h.metrics || {}, h.details || {});
         renderP1Delayed((h.details || {}).p1Delayed, (h.metrics || {}).p1Delayed);
         document.getElementById('upd-at').textContent = h.updatedAt || _histIndex[0];
-      } catch(e) { console.error('live load failed', e); }
+      } catch(e) {
+        console.error('live load failed', e);
+        renderP1Delayed(typeof _P1D !== 'undefined' ? _P1D : [], typeof _M !== 'undefined' ? _M.p1Delayed : 0);
+      }
     }
     loadLiveSalesTables();
     updateHistNav(); return;
