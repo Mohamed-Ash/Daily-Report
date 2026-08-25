@@ -557,7 +557,7 @@ async function loadArchivedSalesTables(dateStr) {
     if (salesWrap)    renderSalesTable(salesWrap, s.sales.rows, s.sales.totalBig);
     if (branchWrap)   renderGenericTable(branchWrap, s.branches.headers, s.branches.rows);
     if (completedWrap) renderGenericTable(completedWrap, s.completed.headers, s.completed.rows);
-    if (teamsWrap)    renderTeamsTable(teamsWrap, s.teams.headers, s.teams.values);
+    if (teamsWrap)    renderTeamsTable(teamsWrap, ['نورا و منار ومحمد بيومي', 'ندي وعمر و اسراء احمد', 'رحمه وهبة و ابراهيم درويش', 'المجموع'], s.teams.values);
   } catch (e) {
     const msg = '<div style="color:var(--text-dim);padding:20px;text-align:center;font-size:12px">📭 لا توجد بيانات مؤرشفة لهذا اليوم</div>';
     wraps.forEach(w => { w.innerHTML = msg; });
