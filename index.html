@@ -265,6 +265,7 @@ function renderP1Delayed(details, total) {
 // ── History navigation ────────────────────────────────────────────────────────
 let _histIndex = [];
 let _histPos   = -1; // -1 = today
+let _liveMode  = true; // false when viewing a historical date
 
 async function initHistory() {
   try {
@@ -384,6 +385,10 @@ function parseCsvProper(text) {
 }
 
 function renderSalesTable(wrap, rows, totalBig) {
+  if (!totalBig) {
+    const tRow = (rows || []).find(r => r.name && r.name.includes('اجمالي'));
+    if (tRow) totalBig = tRow.big;
+  }
   let html = '<table class="sales-table"><thead><tr><th style="width:36px">#</th><th>اسم السيلز</th><th>أقل من 5k</th><th>أكتر من 5k</th><th>الإجمالي</th></tr></thead><tbody>';
   let idx = 0;
   rows.forEach(r => {
@@ -445,6 +450,7 @@ async function loadSalesTable() {
     const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/export?format=csv&t=' + Date.now());
     if (!r.ok) throw new Error('fetch failed');
     const rows = parseCsvProper(await r.text());
+    if (!_liveMode) return;
     // Find the header row (contains "اسم السيلز") and start data from the next row
     let dataStart = 1;
     for (let i = 0; i < Math.min(rows.length, 5); i++) {
@@ -477,11 +483,12 @@ async function loadBranchTable() {
     const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/export?format=csv&gid=1078209926&t=' + Date.now());
     if (!r.ok) throw new Error();
     const rows = parseCsvProper(await r.text());
+    if (!_liveMode) return;
     if (rows.length < 1) throw new Error();
     const hdrs = rows[0];
     const dataRows = rows.slice(1).filter(row => row.some(c => c.trim()));
     renderGenericTable(wrap, hdrs, dataRows);
-  } catch { genericTableFail(wrap); }
+  } catch { if (_liveMode) genericTableFail(wrap); }
 }
 
 async function loadCompletedTable() {
@@ -491,11 +498,12 @@ async function loadCompletedTable() {
     const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/export?format=csv&gid=699409480&t=' + Date.now());
     if (!r.ok) throw new Error();
     const rows = parseCsvProper(await r.text());
+    if (!_liveMode) return;
     if (rows.length < 1) throw new Error();
     const hdrs = rows[0];
     const dataRows = rows.slice(1).filter(row => row.some(c => c.trim()));
     renderGenericTable(wrap, hdrs, dataRows);
-  } catch { genericTableFail(wrap); }
+  } catch { if (_liveMode) genericTableFail(wrap); }
 }
 
 function initScrollBar(scrollEl, wrapEl) {
@@ -521,6 +529,7 @@ async function loadTeamsTable() {
     const r = await fetch('https://docs.google.com/spreadsheets/d/1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ/export?format=csv&gid=1494121778&t=' + Date.now());
     if (!r.ok) throw new Error();
     const rows = parseCsvProper(await r.text());
+    if (!_liveMode) return;
     // Col indices 5-8 hold both a header-text row (team names) and a numbers row —
     // only the numbers row qualifies, so require F/G to parse as numbers.
     let vals = null;
@@ -536,15 +545,17 @@ async function loadTeamsTable() {
     if (!vals) throw new Error();
     const hdrs = ['نورا و منار ومحمد بيومي', 'ندي وعمر و اسراء احمد', 'رحمه وهبه و ابراهيم درويش', 'المجموع'];
     renderTeamsTable(wrap, hdrs, vals);
-  } catch { genericTableFail(wrap); }
+  } catch { if (_liveMode) genericTableFail(wrap); }
 }
 
 // ── Sales-tables history (Sales / Branches / Completed+5K / Teams) ────────────
 function loadLiveSalesTables() {
+  _liveMode = true;
   loadSalesTable(); loadBranchTable(); loadCompletedTable(); loadTeamsTable();
 }
 
 async function loadArchivedSalesTables(dateStr) {
+  _liveMode = false;
   const salesWrap     = document.getElementById('sales-table-wrap');
   const branchWrap     = document.getElementById('branch-table-wrap');
   const completedWrap  = document.getElementById('completed-table-wrap');
