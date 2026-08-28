@@ -1,5 +1,5 @@
 {
-  "ts": "2026-08-28 11:00",
+  "ts": "2026-08-28 14:00",
   "total": 1036,
   "active": 250,
   "onHold": 34,
@@ -9,7 +9,7 @@
     "p2": 64,
     "p3": 28,
     "recv": 64,
-    "coll": 46,
+    "coll": 45,
     "licMonth": 59,
     "sijilSaudi": 106,
     "clientApproval": 14,
