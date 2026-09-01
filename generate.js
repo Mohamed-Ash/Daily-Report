@@ -589,7 +589,7 @@ async function pushHistoryToGitHub(dateKey, histEntry, histIndex) {
   const token = process.env.GITHUB_TOKEN;
   if (!token) { console.log('  [history push] no GITHUB_TOKEN — skipping'); return; }
 
-  const repo = 'ameerellwaa-rgb/Daily-Report';
+const repo = 'mohamed-ash/Daily-Report';
 
   function ghGet(filePath) {
     return new Promise(resolve => {
