@@ -27,10 +27,10 @@ var fetch = async function(url, opts) {
 // ── إعدادات ────────────────────────────────────────────────────────────────
 const PORTAL_ID          = '896030705';
 const REPO               = 'mohamed-ash/Daily-Report';
-const GITHUB_TOKEN       = '<<GITHUB_TOKEN>>';
-const ZOHO_CLIENT_ID     = '<<ZOHO_CLIENT_ID>>';
-const ZOHO_CLIENT_SECRET = '<<ZOHO_CLIENT_SECRET>>';
-const ZOHO_REFRESH_TOKEN = '<<ZOHO_REFRESH_TOKEN>>';
+const GITHUB_TOKEN       = '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';
+const ZOHO_CLIENT_ID     = '1000.23HWAS28T44DOKPL663UI50SDT9MFJ';
+const ZOHO_CLIENT_SECRET = 'facae8fe26f48f75f0405ee54059e011cb9839e445';
+const ZOHO_REFRESH_TOKEN = '1000.407fb0cf245074fb12341d2c134c30ae.ca437329c01ca7e24bf57c02d287742a';
 const SHEET_ID           = '11P7XJlm19FMGwgEv5OvyETpjK8qef-Vt6amrCru9bKY'; // شيت الدفعة الأولى — READ ONLY، ممنوع التعديل
 
 const CACHE_VERSION      = 7;                    // زوّده لإبطال كل الكاش فورًا
@@ -43,6 +43,18 @@ const AM_MAP   = {   // الاسم في Zoho ← الاسم المعروض با�
   'pola ellwaa':'بولا','Youssef Mellwaa':'يوسف','Mostafa Ellwaa':'مصطفى',
   'Mohmed sobih':'محمد صبيح'
 };
+
+// ── أسماء Zoho اللي لازم تتطابق حرفيًا (راجع n8n/HANDOVER.md) ──────────────
+//    غيّر القيمة هنا لو الاسم اتغيّر في Zoho — بلاش تدوّر عليه جوه الكود.
+const MS_P2_NAME         = 'الدفعة الثانية';
+const MS_P3_NAME         = 'الدفعة الثالثة';
+const TASK_LICENSE       = 'صدور الترخيص';
+const TASK_LICENSE_RECV  = 'استلام بيانات الترخيص';
+const TASK_LICENSE_COLL  = 'جمع بيانات الترخيص';
+const TASK_CLIENT_APPROVAL = 'موافقة العميل على الاوفر فيو';
+const TASK_OVERVIEW      = 'عمل الاوفر فيو';
+const TASK_SIJIL         = 'تسليم نسخة من السجل التجارى';
+const TASK_AMER          = 'عمل شركة  امريكا'; // مسافتين بين "شركة" و"امريكا" — مقصودة، متصلحهاش
 
 // ── حد أقصى 3 نداءات في الثانية لـ Zoho ────────────────────────────────────
 var reqCount = 0, windowStart = Date.now();
@@ -237,38 +249,38 @@ function disp(owner) { return AM_MAP[owner] || owner || '—'; }
 // ⚠️ المطابقة بالاسم الحرفي. أي مسافة زيادة أو اختلاف إملائي (ه/ة) في Zoho
 //    = الـ milestone مش موجودة = المشروع يختفي من التقرير بصمت.
 async function getEntry(pid, projUpd, cache) {
-  var c = cache[pid];
-  if (c && ((c._v===CACHE_VERSION && c._upd===projUpd && (Date.now()-(c._ts||0))<TTL_MS) || (c.u!==undefined && c.u===projUpd && c.rv!==undefined))) return c;
+  var cached = cache[pid];
+  if (cached && ((cached._v===CACHE_VERSION && cached._upd===projUpd && (Date.now()-(cached._ts||0))<TTL_MS) || (cached.u!==undefined && cached.u===projUpd && cached.rv!==undefined))) return cached;
 
   var msRes = await zohoGet('https://projectsapi.zoho.com/restapi/portal/'+PORTAL_ID+'/projects/'+pid+'/milestones/');
   var msList = msRes && msRes.milestones ? msRes.milestones : [];
-  var m2=null, m3=null;
+  var milestoneSecondPayment=null, milestoneThirdPayment=null;
   for (var i=0; i<msList.length; i++) {
-    if (msList[i].name==='الدفعة الثانية') m2=msList[i];        // 'الدفعة الثانية'
-    else if (msList[i].name==='الدفعة الثالثة') m3=msList[i];  // 'الدفعة الثالثة'
+    if (msList[i].name===MS_P2_NAME) milestoneSecondPayment=msList[i];
+    else if (msList[i].name===MS_P3_NAME) milestoneThirdPayment=msList[i];
   }
 
   var tasks = await fetchTasksAll(pid);
-  function st(t) { return ((t.status && t.status.name) ? t.status.name : (t.status||'')).toLowerCase(); }
+  function taskStatus(t) { return ((t.status && t.status.name) ? t.status.name : (t.status||'')).toLowerCase(); }
 
   var licTask=null, sijilOpen=null, ovOpen=null;
   var rv=false, co=false, ap=false, am=false, sj=false;
   for (var j=0; j<tasks.length; j++) {
-    var t=tasks[j], tn=t.name||'', ts=st(t);
-    if (tn==='صدور الترخيص') licTask=t;                                                        // 'صدور الترخيص'
-    if (tn==='استلام بيانات الترخيص' && ts==='open') rv=true;  // 'استلام بيانات الترخيص'
-    if (tn==='جمع بيانات الترخيص' && ts==='open') co=true;                    // 'جمع بيانات الترخيص'
-    if (tn==='موافقة العميل على الاوفر فيو' && ts==='open') ap=true;  // 'موافقة العميل على الاوفر فيو'
-    if (tn.indexOf('عمل شركة  امريكا')!==-1 && ts==='open') am=true;                          // 'عمل شركة  امريكا' (مسافتين!)
-    if (tn.indexOf('تسليم نسخة من السجل التجارى')!==-1 && ts==='finished') sj=true;  // 'تسليم نسخة من السجل التجارى'
-    if (tn.indexOf('تسليم نسخة من السجل التجارى')!==-1 && ts==='open' && !sijilOpen) sijilOpen=t;
-    if (tn.indexOf('عمل الاوفر فيو')!==-1 && ts==='open' && !ovOpen) ovOpen=t;                      // 'عمل الاوفر فيو'
+    var t=tasks[j], tn=t.name||'', ts=taskStatus(t);
+    if (tn===TASK_LICENSE) licTask=t;
+    if (tn===TASK_LICENSE_RECV && ts==='open') rv=true;
+    if (tn===TASK_LICENSE_COLL && ts==='open') co=true;
+    if (tn===TASK_CLIENT_APPROVAL && ts==='open') ap=true;
+    if (tn.indexOf(TASK_AMER)!==-1 && ts==='open') am=true;
+    if (tn.indexOf(TASK_SIJIL)!==-1 && ts==='finished') sj=true;
+    if (tn.indexOf(TASK_SIJIL)!==-1 && ts==='open' && !sijilOpen) sijilOpen=t;
+    if (tn.indexOf(TASK_OVERVIEW)!==-1 && ts==='open' && !ovOpen) ovOpen=t;
   }
 
-  var licFin = licTask && (st(licTask)==='finished' || st(licTask)==='cancelled');
-  var m2st = m2 ? (m2.status||'').toLowerCase() : null;   // 'completed' | 'notcompleted' | null (مش موجودة)
-  var m3st = m3 ? (m3.status||'').toLowerCase() : null;
-  var m3t  = (m3st==='completed') ? (m3.completed_time_long||m3.end_date_long||0) : null;
+  var licFin = licTask && (taskStatus(licTask)==='finished' || taskStatus(licTask)==='cancelled');
+  var milestoneSecondPaymentStatus = milestoneSecondPayment ? (milestoneSecondPayment.status||'').toLowerCase() : null;   // 'completed' | 'notcompleted' | null (مش موجودة)
+  var milestoneThirdPaymentStatus = milestoneThirdPayment ? (milestoneThirdPayment.status||'').toLowerCase() : null;
+  var milestoneThirdPaymentTime  = (milestoneThirdPaymentStatus==='completed') ? (milestoneThirdPayment.completed_time_long||milestoneThirdPayment.end_date_long||0) : null;
 
   var entry = {
     _v:CACHE_VERSION, _upd:projUpd, _ts:Date.now(),
@@ -276,7 +288,9 @@ async function getEntry(pid, projUpd, cache) {
     rv:rv, co:co, ap:ap, am:am, sj:sj,
     sjE: sijilOpen ? (sijilOpen.end_date_long||null) : null, // deadline السجل لو مفتوح
     ovE: ovOpen    ? (ovOpen.end_date_long||null)    : null, // deadline الأوفر فيو
-    m2:m2st, m3:m3st, m3t:m3t
+    // ⚠️ أسماء الحقول m2/m3/m3t هي نفسها المحفوظة في task_cache.json على GitHub —
+    //    لازم تفضل زي ما هي، غيّرها هيكسر توافق الكاش القديم مع الكود الجديد.
+    m2:milestoneSecondPaymentStatus, m3:milestoneThirdPaymentStatus, m3t:milestoneThirdPaymentTime
   };
   cache[pid] = entry;
   return entry;
@@ -294,19 +308,21 @@ async function getEntryM3(pid, projUpd, cache) {
 
   var msRes = await zohoGet('https://projectsapi.zoho.com/restapi/portal/'+PORTAL_ID+'/projects/'+pid+'/milestones/');
   var msList = msRes && msRes.milestones ? msRes.milestones : [];
-  var m3=null;
-  for (var i=0; i<msList.length; i++) { if (msList[i].name==='الدفعة الثالثة') { m3=msList[i]; break; } }
-  var m3st = m3 ? (m3.status||'').toLowerCase() : null;
-  var m3t  = (m3st==='completed') ? (m3.completed_time_long||m3.end_date_long||0) : null;
+  var milestoneThirdPayment=null;
+  for (var i=0; i<msList.length; i++) { if (msList[i].name===MS_P3_NAME) { milestoneThirdPayment=msList[i]; break; } }
+  var milestoneThirdPaymentStatus = milestoneThirdPayment ? (milestoneThirdPayment.status||'').toLowerCase() : null;
+  var milestoneThirdPaymentTime  = (milestoneThirdPaymentStatus==='completed') ? (milestoneThirdPayment.completed_time_long||milestoneThirdPayment.end_date_long||0) : null;
 
-  var entry = { _v:CACHE_VERSION, _upd:projUpd, m3t:m3t };
+  var entry = { _v:CACHE_VERSION, _upd:projUpd, m3t:milestoneThirdPaymentTime };
   cache['ms_'+pid] = entry;
   return entry;
 }
 
-// ═══════════════════════════ MAIN ═════════════════════════════════════════
-try {
-  var now = Date.now();
+// ═══════════════════════════ المراحل ═══════════════════════════════════════
+// كل مرحلة بتاخد اللي محتاجاه بس وترجع اللي بعدها هيحتاجه — بدل ما يكون كل
+// حاجة في try واحد طويل بيشارك متغيرات عامة. الترتيب في MAIN تحت.
+
+function setupDateHelpers(now) {
   var d = new Date(now);
   var dateKey = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   var updatedAt = dateKey+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
@@ -326,8 +342,11 @@ try {
     }
     return false;
   }
+  return { dateKey:dateKey, updatedAt:updatedAt, isThisMonth:isThisMonth, is112:is112, projCompletedThisMonth:projCompletedThisMonth };
+}
 
-  // ── الكاش من GitHub ──────────────────────────────────────────────────────
+// ── الكاش من GitHub + كل مشاريع Zoho مقسّمة حسب الحالة ─────────────────────
+async function fetchZohoProjects() {
   var cacheFile = await ghGet('task_cache.json');
   var taskCache = {};
   if (cacheFile && cacheFile.content) {
@@ -340,6 +359,16 @@ try {
   var onHoldProjects = allProjects.filter(function(p){ return getCS(p)==='On Hold'; });
   // ⚠️ مجموع التلاتة أقل من allProjects — فيه مشاريع custom_status_name بتاعتها
   //    قيمة تالتة (فاضية/إملاء مختلف) وبتتجاهل تمامًا. راجع debug.json
+
+  return { taskCache:taskCache, allProjects:allProjects, activeProjects:activeProjects, doneProjects:doneProjects, onHoldProjects:onHoldProjects };
+}
+
+// ── حساب كل المؤشرات (دفعة 2/3، تراخيص، سجل، ...) + الدفعة الأولى من الشيت ──
+async function computeAllKpis(zoho, now, dateHelpers) {
+  var activeProjects = zoho.activeProjects, onHoldProjects = zoho.onHoldProjects,
+      doneProjects = zoho.doneProjects, taskCache = zoho.taskCache;
+  var isThisMonth = dateHelpers.isThisMonth, is112 = dateHelpers.is112,
+      projCompletedThisMonth = dateHelpers.projCompletedThisMonth;
 
   var kpi = {
     p2:[], p3:[], recv:[], coll:[], licMonth:[],
@@ -430,23 +459,34 @@ try {
     if (rows.length > 1) {
       var hdrs = rows[0].map(function(h){ return String(h).trim().toLowerCase(); });
       // ⚠️ لو أي عنوان عمود اتغير في الشيت، indexOf يرجع -1 والجدول يفضى بصمت
-      var iN=hdrs.indexOf('project name'),iO=hdrs.indexOf('owner'),iS=hdrs.indexOf('status'),iP=hdrs.indexOf('payment method'),iF=hdrs.indexOf('1st'),iT=hdrs.indexOf('tax'),iR=hdrs.indexOf('the rest');
+      var idxName    = hdrs.indexOf('project name');
+      var idxOwner   = hdrs.indexOf('owner');
+      var idxStatus  = hdrs.indexOf('status');
+      var idxPayment = hdrs.indexOf('payment method');
+      var idxFirst   = hdrs.indexOf('1st');
+      var idxTax     = hdrs.indexOf('tax');
+      var idxRest    = hdrs.indexOf('the rest');
       for (var ri=1; ri<rows.length; ri++) {
-        var row=rows[ri]; if (!row[iN]) continue;
-        if (iS>=0 && (row[iS]||'').trim().toLowerCase()!=='active') continue;   // بس العملاء النشطين
+        var row=rows[ri]; if (!row[idxName]) continue;
+        if (idxStatus>=0 && (row[idxStatus]||'').trim().toLowerCase()!=='active') continue;   // بس العملاء النشطين
         function pn(s){ return parseFloat(String(s||'').replace(/,/g,''))||0; }
         // ⚠️ الفلتر ده بيشيل أي عميل عليه ضريبة، وبيخلي عمود الضريبة كله أصفار.
         //    الرقم نزل من ~145 لـ ~60 وقت الهجرة لـ n8n بسببه. محتاج قرار من الشغل.
-        if (iT>=0 && pn(row[iT])!==0) continue;
-        var theRest=pn(row[iR]);
+        if (idxTax>=0 && pn(row[idxTax])!==0) continue;
+        var theRest=pn(row[idxRest]);
         if (!theRest) continue;
-        p1Rows.push({name:row[iN]||'',owner:row[iO]||'',paymentMethod:row[iP]||'',first:pn(row[iF]),tax:0,theRest:theRest});
+        p1Rows.push({name:row[idxName]||'',owner:row[idxOwner]||'',paymentMethod:row[idxPayment]||'',first:pn(row[idxFirst]),tax:0,theRest:theRest});
       }
     }
   }
   kpi.p1Delayed = p1Rows;
 
-  // ── الأرقام النهائية ─────────────────────────────────────────────────────
+  return { kpi:kpi, amActive:amActive, amOnHold:amOnHold };
+}
+
+// ── تجميع الأرقام النهائية اللي هتتبعت/تتحفظ ────────────────────────────────
+function buildPayload(kpiResult, dateKey, updatedAt) {
+  var kpi = kpiResult.kpi, amActive = kpiResult.amActive, amOnHold = kpiResult.amOnHold;
   var kkeys = ['p2','p3','recv','coll','licMonth','sijilSaudi','clientApproval','overDue','sijilDelay','sijilAmer','amer','completedMonth','completed112','onHold','p1Delayed'];
   var metrics = {};
   for (var ki=0; ki<kkeys.length; ki++) metrics[kkeys[ki]] = kpi[kkeys[ki]].length;
@@ -454,7 +494,16 @@ try {
   var amData = { active:amActive, onHold:amOnHold };
   var payload = { updatedAt:updatedAt, dateKey:dateKey, metrics:metrics, details:kpi, amData:amData };
 
-  // ── تعديل index.html على GitHub: بيبدّل سطور الثوابت بس، مش الفانكشنات ───
+  return { metrics:metrics, amData:amData, payload:payload };
+}
+
+// ── تعديل index.html + دفع data.json/debug.json/task_cache.json/history ────
+async function pushDashboardFiles(kpi, built, zoho, dateKey, updatedAt, now) {
+  var metrics = built.metrics, amData = built.amData, payload = built.payload;
+  var allProjects = zoho.allProjects, activeProjects = zoho.activeProjects,
+      onHoldProjects = zoho.onHoldProjects, doneProjects = zoho.doneProjects, taskCache = zoho.taskCache;
+
+  // بيبدّل سطور الثوابت بس، مش الفانكشنات
   var htmlFile = await ghGet('index.html');
   if (htmlFile && htmlFile.content) {
     var html = Buffer.from(htmlFile.content.replace(/\n/g,''),'base64').toString('utf8');
@@ -472,7 +521,6 @@ try {
     await ghPush('index.html', html, 'data: '+updatedAt);
   }
 
-  // ── دفع الملفات المساعدة ─────────────────────────────────────────────────
   var debugInfo = {
     ts:updatedAt,
     total:allProjects.length, active:activeProjects.length,
@@ -493,9 +541,11 @@ try {
   if (idxFile && idxFile.content) { try { histIdx = JSON.parse(Buffer.from(idxFile.content.replace(/\n/g,''),'base64').toString('utf8')); } catch(e) {} }
   if (!histIdx.includes(dateKey)) { histIdx.unshift(dateKey); if (histIdx.length>90) histIdx=histIdx.slice(0,90); }
   await ghPush('history/index.json', JSON.stringify(histIdx), 'idx: '+dateKey);
+}
 
-  // ── أرشفة السيلز / الفروع / المنتهين / الفرق ─────────────────────────────
-  // try منفصل: لو الشيت فشل، تقرير Zoho والإيميل يفضلوا شغالين عادي
+// ── أرشفة السيلز / الفروع / المنتهين / الفرق ───────────────────────────────
+// try منفصل: لو الشيت فشل، تقرير Zoho والإيميل يفضلوا شغالين عادي
+async function archiveSalesTables(dateKey, updatedAt, now) {
   var salesArchiveErr = null;
   try {
     var salesRaw     = await fetchSalesRows(null);
@@ -522,8 +572,11 @@ try {
   } catch (salesEx) {
     salesArchiveErr = String(salesEx);
   }
+  return salesArchiveErr;
+}
 
-  // ── الإيميل: مرة واحدة يوميًا الساعة 11 صباحًا القاهرة (08:00 UTC) ────────
+// ── الإيميل: مرة واحدة يوميًا الساعة 11 صباحًا القاهرة (08:00 UTC) ─────────
+async function sendDailyEmailIfDue(dateKey, updatedAt, metrics, amData, kpi) {
   var emailSent = false, emailErr = '';
   var cairoHour = (new Date().getUTCHours() + 3) % 24;   // القاهرة = UTC+3
   if (cairoHour === 11) {
@@ -606,8 +659,25 @@ try {
       } catch(emailEx){emailErr=String(emailEx);}
     } else { emailErr='already-sent-today'; }
   }
+  return { emailSent:emailSent, emailErr:emailErr };
+}
 
-  return [{ json: { ok:true, updatedAt:updatedAt, metrics:metrics, emailSent:emailSent, emailErr:emailErr, salesArchiveErr:salesArchiveErr } }];
+// ═══════════════════════════ MAIN ═════════════════════════════════════════
+try {
+  var now = Date.now();
+  var dateHelpers = setupDateHelpers(now);
+  var dateKey = dateHelpers.dateKey, updatedAt = dateHelpers.updatedAt;
+
+  var zoho      = await fetchZohoProjects();
+  var kpiResult = await computeAllKpis(zoho, now, dateHelpers);
+  var built     = buildPayload(kpiResult, dateKey, updatedAt);
+
+  await pushDashboardFiles(kpiResult.kpi, built, zoho, dateKey, updatedAt, now);
+
+  var salesArchiveErr = await archiveSalesTables(dateKey, updatedAt, now);
+  var emailResult      = await sendDailyEmailIfDue(dateKey, updatedAt, built.metrics, built.amData, kpiResult.kpi);
+
+  return [{ json: { ok:true, updatedAt:updatedAt, metrics:built.metrics, emailSent:emailResult.emailSent, emailErr:emailResult.emailErr, salesArchiveErr:salesArchiveErr } }];
 } catch(e) {
   return [{ json: { ok:false, error:String(e), stack:(e&&e.stack)?String(e.stack):'no stack' } }];
 }
