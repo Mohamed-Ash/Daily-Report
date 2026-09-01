@@ -26,7 +26,7 @@ var fetch = async function(url, opts) {
 
 // ── إعدادات ────────────────────────────────────────────────────────────────
 const PORTAL_ID          = '896030705';
-const REPO               = 'ameerellwaa-rgb/Daily-Report';
+const REPO               = 'mohamed-ash/Daily-Report';
 const GITHUB_TOKEN       = '<<GITHUB_TOKEN>>';
 const ZOHO_CLIENT_ID     = '<<ZOHO_CLIENT_ID>>';
 const ZOHO_CLIENT_SECRET = '<<ZOHO_CLIENT_SECRET>>';
