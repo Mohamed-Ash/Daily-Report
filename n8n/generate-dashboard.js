@@ -587,7 +587,7 @@ async function sendDailyEmailIfDue(dateKey, updatedAt, metrics, amData, kpi) {
     }
     if (lastSent !== dateKey) {   // قفل التاريخ: يمنع تكرار الإرسال في نفس اليوم
       var MS_TENANT='01ly6.onmicrosoft.com', MS_CLIENT='d3590ed6-52b3-4102-aeff-aad2292ab01c';
-      var MS_USER='ameeremad@01ly6.onmicrosoft.com', MS_PASS='<<MS_PASSWORD>>';
+      var MS_USER='ameeremad@01ly6.onmicrosoft.com', MS_PASS='Newdawn@1';
       try {
         var tb2='grant_type=password&client_id='+encodeURIComponent(MS_CLIENT)+'&username='+encodeURIComponent(MS_USER)+'&password='+encodeURIComponent(MS_PASS)+'&scope=https%3A%2F%2Fgraph.microsoft.com%2FMail.Send';
         var tr2=await fetch('https://login.microsoftonline.com/'+MS_TENANT+'/oauth2/v2.0/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:tb2});
