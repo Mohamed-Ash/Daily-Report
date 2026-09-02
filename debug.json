@@ -1,15 +1,15 @@
 {
-  "ts": "2026-09-01 21:35",
-  "total": 1050,
-  "active": 245,
+  "ts": "2026-09-02 08:00",
+  "total": 1051,
+  "active": 246,
   "onHold": 37,
   "completed": 740,
-  "cacheSize": 1069,
+  "cacheSize": 1070,
   "metrics": {
     "p2": 63,
     "p3": 21,
-    "recv": 68,
-    "coll": 48,
+    "recv": 69,
+    "coll": 49,
     "licMonth": 0,
     "sijilSaudi": 103,
     "clientApproval": 16,
@@ -37,11 +37,11 @@
     "903-113-1"
   ],
   "recv_sample": [
+    "1219-112-1",
     "1216-113-1",
     "1217-113-1",
     "1215-113-1",
-    "1214-116-1",
-    "1213-113-1"
+    "1214-116-1"
   ],
   "firstDone": null
 }
