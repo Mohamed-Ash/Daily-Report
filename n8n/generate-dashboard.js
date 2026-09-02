@@ -27,10 +27,10 @@ var fetch = async function(url, opts) {
 // ── إعدادات ────────────────────────────────────────────────────────────────
 const PORTAL_ID          = '896030705';
 const REPO               = 'mohamed-ash/Daily-Report';
-const GITHUB_TOKEN       = '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';
-const ZOHO_CLIENT_ID     = '1000.23HWAS28T44DOKPL663UI50SDT9MFJ';
-const ZOHO_CLIENT_SECRET = 'facae8fe26f48f75f0405ee54059e011cb9839e445';
-const ZOHO_REFRESH_TOKEN = '1000.407fb0cf245074fb12341d2c134c30ae.ca437329c01ca7e24bf57c02d287742a';
+const GITHUB_TOKEN       = '<<GITHUB_TOKEN>>';
+const ZOHO_CLIENT_ID     = '<<ZOHO_CLIENT_ID>>';
+const ZOHO_CLIENT_SECRET = '<<ZOHO_CLIENT_SECRET>>';
+const ZOHO_REFRESH_TOKEN = '<<ZOHO_REFRESH_TOKEN>>';
 const SHEET_ID           = '11P7XJlm19FMGwgEv5OvyETpjK8qef-Vt6amrCru9bKY'; // شيت الدفعة الأولى — READ ONLY، ممنوع التعديل
 
 const CACHE_VERSION      = 7;                    // زوّده لإبطال كل الكاش فورًا
@@ -262,6 +262,14 @@ async function getEntry(pid, projUpd, cache) {
 
   var tasks = await fetchTasksAll(pid);
   function taskStatus(t) { return ((t.status && t.status.name) ? t.status.name : (t.status||'')).toLowerCase(); }
+  // ⚠️ تخمين — لسه محتاج تأكيد من أول Execute حقيقي: شكل حقل "مين عامل التاسك"
+  //    في استجابة Zoho Tasks API مش موثّق عندنا. جرّب أكتر من شكل معروف وإلا يرجع فاضي.
+  function taskOwnerName(t) {
+    if (t.owner_name) return t.owner_name;
+    if (t.details && t.details.owners && t.details.owners[0] && t.details.owners[0].name) return t.details.owners[0].name;
+    if (t.owner && t.owner.name) return t.owner.name;
+    return '';
+  }
 
   var licTask=null, sijilOpen=null, ovOpen=null;
   var rv=false, co=false, ap=false, am=false, sj=false;
@@ -288,6 +296,9 @@ async function getEntry(pid, projUpd, cache) {
     rv:rv, co:co, ap:ap, am:am, sj:sj,
     sjE: sijilOpen ? (sijilOpen.end_date_long||null) : null, // deadline السجل لو مفتوح
     ovE: ovOpen    ? (ovOpen.end_date_long||null)    : null, // deadline الأوفر فيو
+    // حقول إضافية لـ export الدفعة الثانية المتأخرة (تفاصيل تشخيصية بس)
+    licStatus: licTask ? taskStatus(licTask) : '',   // finished / cancelled / open / ''
+    licOwner:  licTask ? taskOwnerName(licTask) : '', // مين عامل تاسك "صدور الترخيص"
     // ⚠️ أسماء الحقول m2/m3/m3t هي نفسها المحفوظة في task_cache.json على GitHub —
     //    لازم تفضل زي ما هي، غيّرها هيكسر توافق الكاش القديم مع الكود الجديد.
     m2:milestoneSecondPaymentStatus, m3:milestoneThirdPaymentStatus, m3t:milestoneThirdPaymentTime
@@ -392,7 +403,7 @@ async function computeAllKpis(zoho, now, dateHelpers) {
 
     // الدفعة الثانية المتأخرة: الترخيص صدر + الـ milestone موجودة + لسه مقفلتش
     if (e.lic!==null && e.m2!==null && e.m2!=='completed')
-      kpi.p2.push({name:pname, owner:disp(owner)});
+      kpi.p2.push({name:pname, owner:disp(owner), taskName:TASK_LICENSE, taskOwner:e.licOwner||'', customStatus:e.licStatus||''});
     // الدفعة الثالثة المتأخرة: الدفعة 2 اتدفعت + milestone 3 موجودة + لسه مقفلتش
     if (e.m2==='completed' && e.m3!==null && e.m3!=='completed')
       kpi.p3.push({name:pname, owner:disp(owner)});
