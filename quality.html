@@ -375,9 +375,7 @@ footer{text-align:center;color:var(--text-dim);font-size:11px;padding:16px 0 4px
 
 <script>
 const QA_PW    = 'amir1230';
-const _tk      = ['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'];
-const GH_TOKEN = _tk.join('');
-const GH_REPO = 'mohamed-ash/Daily-Report';
+const PROXY_URL = 'https://quality-feedback-proxy.mohamed-ashraf4117.workers.dev';
 const FB_FILE  = 'quality-feedback.json';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -458,10 +456,7 @@ async function loadAll() {
 
 async function reloadFeedback() {
   try {
-    const r = await fetch(
-      'https://api.github.com/repos/' + GH_REPO + '/contents/' + FB_FILE,
-      { headers:{ Authorization:'Bearer '+GH_TOKEN, Accept:'application/vnd.github+json' } }
-    );
+    const r = await ghGet(FB_FILE);
     _feedback = JSON.parse(b64dec((await r.json()).content));
   } catch { _feedback = {}; }
 }
@@ -720,13 +715,12 @@ async function saveManual(key, mainTab) {
 
 // ── GitHub helpers ────────────────────────────────────────────────────────────
 function ghGet(path) {
-  return fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,
-    { headers:{ Authorization:'Bearer '+GH_TOKEN, Accept:'application/vnd.github+json' } });
+  return fetch(PROXY_URL + '/' + path);
 }
 function ghPut(path, obj, sha, msg) {
-  return fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
+  return fetch(PROXY_URL + '/' + path, {
     method:'PUT',
-    headers:{ Authorization:'Bearer '+GH_TOKEN, Accept:'application/vnd.github+json', 'Content-Type':'application/json' },
+    headers:{ 'Content-Type':'application/json' },
     body: JSON.stringify({ message:msg, content:b64enc(JSON.stringify(obj,null,2)), sha })
   });
 }
