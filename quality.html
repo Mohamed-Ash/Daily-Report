@@ -460,7 +460,7 @@ async function reloadFeedback() {
   try {
     const r = await fetch(
       'https://api.github.com/repos/' + GH_REPO + '/contents/' + FB_FILE,
-      { headers:{ Authorization:'token '+GH_TOKEN, Accept:'application/vnd.github+json' } }
+      { headers:{ Authorization:'Bearer '+GH_TOKEN, Accept:'application/vnd.github+json' } }
     );
     _feedback = JSON.parse(b64dec((await r.json()).content));
   } catch { _feedback = {}; }
@@ -721,12 +721,12 @@ async function saveManual(key, mainTab) {
 // ── GitHub helpers ────────────────────────────────────────────────────────────
 function ghGet(path) {
   return fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,
-    { headers:{ Authorization:'token '+GH_TOKEN, Accept:'application/vnd.github+json' } });
+    { headers:{ Authorization:'Bearer '+GH_TOKEN, Accept:'application/vnd.github+json' } });
 }
 function ghPut(path, obj, sha, msg) {
   return fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path, {
     method:'PUT',
-    headers:{ Authorization:'token '+GH_TOKEN, Accept:'application/vnd.github+json', 'Content-Type':'application/json' },
+    headers:{ Authorization:'Bearer '+GH_TOKEN, Accept:'application/vnd.github+json', 'Content-Type':'application/json' },
     body: JSON.stringify({ message:msg, content:b64enc(JSON.stringify(obj,null,2)), sha })
   });
 }
