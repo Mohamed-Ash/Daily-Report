@@ -87,15 +87,17 @@ async function ghGet(path) {
   if (!r.ok) return null;
   return r.json();
 }
-// ⚠️ الكود بينادي ghPush من غير ما يتأكد من النتيجة — لو التوكن انتهى، كل حاجة
-//    تفشل بصمت والـ output يقول ok:true. راجع n8n/HANDOVER.md
 async function ghPush(path, content, msg) {
   var existing = await ghGet(path);
   var b64 = Buffer.from(content, 'utf8').toString('base64');
   var body = { message:msg, content:b64, branch:'main' };
   if (existing && existing.sha) body.sha = existing.sha;
   var r = await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path, { method:'PUT', headers:{ Authorization:'token '+GITHUB_TOKEN, Accept:'application/vnd.github+json', 'Content-Type':'application/json', 'User-Agent':'n8n-bot' }, body:JSON.stringify(body) });
-  return r.ok;
+  if (!r.ok) {
+    var errText = await r.text().catch(function(){ return ''; });
+    throw new Error('ghPush failed for '+path+': HTTP '+r.status+' '+errText);
+  }
+  return true;
 }
 
 // ── جلب المشاريع من Zoho حسب الحالة (active / on_hold / completed) ─────────
@@ -110,8 +112,10 @@ async function fetchByStatus(status) {
   }
   return all;
 }
-// ⚠️ بنلزق التلات قوايم مع بعض، وبعدين نعيد التصنيف من custom_status_name.
-//    يعني تصنيف Zoho نفسه بيضيع هنا — ولو الحقلين اختلفوا المشروع يروح مكان غلط.
+// بنلزق التلات قوايم مع بعض، وبعدين نعيد التصنيف من custom_status_name (مش من status
+// بتاع Zoho نفسه) لأن ده الحقل اللي بيمثل التصنيف الفعلي للشغل. أي مشروع
+// custom_status_name بتاعه مش من التلاتة القيم المعروفة بيتسجل في unclassifiedProjects
+// بدل ما يتجاهل بصمت — شوف fetchZohoProjects.
 async function fetchAllProjects() {
   var active = await fetchByStatus('active');
   var hold   = await fetchByStatus('on_hold');
@@ -241,7 +245,7 @@ function parseCSV(text) {
   return rows;
 }
 
-function getCS(p)    { return p.custom_status_name || ''; }
+function getCS(p)    { return (p.custom_status_name || '').trim(); }
 function getOwner(p) { return p.owner_name || ''; }
 function disp(owner) { return AM_MAP[owner] || owner || '—'; }
 
@@ -368,10 +372,14 @@ async function fetchZohoProjects() {
   var activeProjects = allProjects.filter(function(p){ return getCS(p)==='Active'; });
   var doneProjects   = allProjects.filter(function(p){ return getCS(p)==='Completed'; });
   var onHoldProjects = allProjects.filter(function(p){ return getCS(p)==='On Hold'; });
-  // ⚠️ مجموع التلاتة أقل من allProjects — فيه مشاريع custom_status_name بتاعتها
-  //    قيمة تالتة (فاضية/إملاء مختلف) وبتتجاهل تمامًا. راجع debug.json
+  // مشاريع custom_status_name بتاعتها قيمة مش من التلاتة المعروفة (فاضية/إملاء مختلف) —
+  // بتتسجل هنا بدل ما تتجاهل بصمت، عشان تبان في debug.json ويتحدد مصيرها.
+  var classified = activeProjects.concat(doneProjects).concat(onHoldProjects);
+  var classifiedIds = {};
+  classified.forEach(function(p){ classifiedIds[String(p.id_string||p.id)] = true; });
+  var unclassifiedProjects = allProjects.filter(function(p){ return !classifiedIds[String(p.id_string||p.id)]; });
 
-  return { taskCache:taskCache, allProjects:allProjects, activeProjects:activeProjects, doneProjects:doneProjects, onHoldProjects:onHoldProjects };
+  return { taskCache:taskCache, allProjects:allProjects, activeProjects:activeProjects, doneProjects:doneProjects, onHoldProjects:onHoldProjects, unclassifiedProjects:unclassifiedProjects };
 }
 
 // ── حساب كل المؤشرات (دفعة 2/3، تراخيص، سجل، ...) + الدفعة الأولى من الشيت ──
@@ -512,7 +520,8 @@ function buildPayload(kpiResult, dateKey, updatedAt) {
 async function pushDashboardFiles(kpi, built, zoho, dateKey, updatedAt, now) {
   var metrics = built.metrics, amData = built.amData, payload = built.payload;
   var allProjects = zoho.allProjects, activeProjects = zoho.activeProjects,
-      onHoldProjects = zoho.onHoldProjects, doneProjects = zoho.doneProjects, taskCache = zoho.taskCache;
+      onHoldProjects = zoho.onHoldProjects, doneProjects = zoho.doneProjects, taskCache = zoho.taskCache,
+      unclassifiedProjects = zoho.unclassifiedProjects || [];
 
   // بيبدّل سطور الثوابت بس، مش الفانكشنات
   var htmlFile = await ghGet('index.html');
@@ -540,7 +549,8 @@ async function pushDashboardFiles(kpi, built, zoho, dateKey, updatedAt, now) {
     p2_sample:(kpi.p2||[]).slice(0,5).map(function(x){return x.name;}),
     p3_sample:(kpi.p3||[]).slice(0,5).map(function(x){return x.name;}),
     recv_sample:(kpi.recv||[]).slice(0,5).map(function(x){return x.name;}),
-    firstDone: null
+    firstDone: null,
+    unclassified: unclassifiedProjects.map(function(p){ return { name:p.name, customStatusName:p.custom_status_name||'' }; })
   };
   await ghPush('debug.json', JSON.stringify(debugInfo,null,2), 'debug: '+updatedAt);
   await ghPush('data.json', JSON.stringify(payload), 'data: '+updatedAt);
