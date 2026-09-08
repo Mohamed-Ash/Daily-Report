@@ -1,26 +1,26 @@
 {
-  "ts": "2026-09-07 14:00",
-  "total": 1068,
-  "active": 251,
-  "onHold": 36,
-  "completed": 744,
-  "cacheSize": 1089,
+  "ts": "2026-09-08 08:00",
+  "total": 1069,
+  "active": 249,
+  "onHold": 38,
+  "completed": 745,
+  "cacheSize": 1090,
   "metrics": {
-    "p2": 39,
+    "p2": 38,
     "p3": 44,
-    "recv": 69,
-    "coll": 53,
+    "recv": 70,
+    "coll": 54,
     "licMonth": 6,
-    "sijilSaudi": 109,
-    "clientApproval": 14,
+    "sijilSaudi": 107,
+    "clientApproval": 13,
     "overDue": 0,
     "sijilDelay": 0,
     "sijilAmer": 3,
     "amer": 30,
-    "completedMonth": 5,
+    "completedMonth": 6,
     "completed112": 0,
-    "onHold": 36,
-    "p1Delayed": 70
+    "onHold": 38,
+    "p1Delayed": 69
   },
   "p2_sample": [
     "1156-114-1",
@@ -37,11 +37,161 @@
     "1077-113-1"
   ],
   "recv_sample": [
+    "1236-113-1",
     "1235-112-1",
     "1234-113-1",
     "1232-113-1",
-    "1233-113-1",
-    "1230-113-1"
+    "1233-113-1"
   ],
-  "firstDone": null
+  "firstDone": null,
+  "unclassified": [
+    {
+      "name": "33-112-23",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "Test_Karim",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "Karim Test",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "TestKarim",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "TestDarwish",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "Test11",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "1082-113-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "1046-113-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "1039-114-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "1029-116-1",
+      "customStatusName": "Delayed"
+    },
+    {
+      "name": "test by karem",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "test amir2",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "1009-113-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "TEST amir",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "895-113-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "771-113-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "758-116-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "850-113-1",
+      "customStatusName": "Delayed"
+    },
+    {
+      "name": "801-119-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "719-1215-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "696-113-1",
+      "customStatusName": "Delayed"
+    },
+    {
+      "name": "659-112-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "653-113-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "640-140-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "636-117-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "633-140-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "622-113-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "618-640-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "561-120-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "557-1216-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "275-1215-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "533-119-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "385-119-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "101-113-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "333-215-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "296-113-1",
+      "customStatusName": "Cancelled"
+    },
+    {
+      "name": "199-1112-1",
+      "customStatusName": "Cancelled"
+    }
+  ]
 }
