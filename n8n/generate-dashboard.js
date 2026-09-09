@@ -24,7 +24,7 @@ var fetch = async function(url, opts) {
   }
 };
 
-// ── إعدادات ────────────────────────────────────────────────────────────────
+// ── إعدادات ─────────────────────────────────────────────────────f───────────
 const PORTAL_ID          = '896030705';
 const REPO               = 'mohamed-ash/Daily-Report';
 const GITHUB_TOKEN       = '<<GITHUB_TOKEN>>';
@@ -195,20 +195,32 @@ function parseSalesTab(rows) {
   return { rows: salesRows, totalBig: totalBig };
 }
 
-// جدول الفرق: بيدور على أول صف فيه رقمين في العمودين F و G
+// جدول الفرق: بيدور على صف العناوين (اللي فيه خلية "المجموع")، وبيستنتج أسماء
+// الفرق وعددهم من نفس الصف بدل تثبيتهم في الكود — عشان أي فريق يتضاف/يتشال في
+// الشيت ينعكس تلقائيًا من غير تعديل كود. القيم بتتاخد من أول صف بعد العناوين
+// وكل خلاياه (بنفس نطاق أعمدة العناوين) أرقام.
 function parseTeamsTab(rows) {
-  var hdrs = ['نورا و منار ومحمد بيومي','ندي وعمر و اسراء احمد','رحمه وهبة و ابراهيم درويش','المجموع'];
-  var vals = null;
   for (var i=0;i<rows.length;i++) {
     var row = rows[i];
-    if (row.length < 9) continue;
-    var f=(row[5]||'').trim(), g=(row[6]||'').trim();
-    if (f!=='' && g!=='' && !isNaN(parseFloat(f)) && !isNaN(parseFloat(g))) {
-      vals = [f, g, (row[7]||'').trim(), (row[8]||'').trim()];
-      break;
+    var totalIdx = -1;
+    for (var c=0;c<row.length;c++) { if ((row[c]||'').trim().indexOf('المجموع')!==-1) { totalIdx = c; break; } }
+    if (totalIdx <= 0) continue;
+
+    var startIdx = totalIdx;
+    while (startIdx > 0 && (row[startIdx-1]||'').trim()!=='') startIdx--;
+    if (totalIdx - startIdx < 1) continue;   // لازم فريق واحد على الأقل قبل "المجموع"
+
+    var headers = row.slice(startIdx, totalIdx+1).map(function(h){ return (h||'').trim(); });
+
+    for (var j=i+1;j<rows.length;j++) {
+      var vrow = rows[j], slice = vrow.slice(startIdx, totalIdx+1);
+      if (slice.length !== headers.length) continue;
+      var allNumeric = slice.every(function(v){ return (v||'').trim()!=='' && !isNaN(parseFloat(v)); });
+      if (allNumeric) return { headers: headers, values: slice.map(function(v){ return v.trim(); }) };
     }
+    return { headers: headers, values: headers.map(function(){ return '0'; }) };
   }
-  return { headers: hdrs, values: vals || ['0','0','0','0'] };
+  return { headers: [], values: [] };
 }
 
 function parseGenericSalesTable(rows) {
