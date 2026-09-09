@@ -1,25 +1,25 @@
 {
-  "ts": "2026-09-09 11:00",
-  "total": 1074,
-  "active": 250,
-  "onHold": 38,
-  "completed": 749,
-  "cacheSize": 1095,
+  "ts": "2026-09-09 14:00",
+  "total": 1075,
+  "active": 246,
+  "onHold": 41,
+  "completed": 752,
+  "cacheSize": 1097,
   "metrics": {
-    "p2": 36,
-    "p3": 43,
-    "recv": 70,
-    "coll": 55,
+    "p2": 35,
+    "p3": 39,
+    "recv": 71,
+    "coll": 56,
     "licMonth": 6,
-    "sijilSaudi": 106,
+    "sijilSaudi": 101,
     "clientApproval": 7,
     "overDue": 0,
     "sijilDelay": 0,
     "sijilAmer": 2,
     "amer": 29,
-    "completedMonth": 9,
+    "completedMonth": 12,
     "completed112": 1,
-    "onHold": 38,
+    "onHold": 41,
     "p1Delayed": 72
   },
   "p2_sample": [
@@ -37,11 +37,11 @@
     "1077-113-1"
   ],
   "recv_sample": [
+    "1242-113-1",
     "1241-114-1",
     "1240-113-1",
     "1239-114-1",
-    "1238-116-1",
-    "1237-140-1"
+    "1238-116-1"
   ],
   "firstDone": null,
   "unclassified": [
@@ -124,10 +124,6 @@
     {
       "name": "719-1215-1",
       "customStatusName": "Cancelled"
-    },
-    {
-      "name": "696-113-1",
-      "customStatusName": "Delayed"
     },
     {
       "name": "659-112-1",
