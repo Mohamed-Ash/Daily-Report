@@ -541,20 +541,27 @@ async function loadTeamsTable() {
     if (!r.ok) throw new Error();
     const rows = parseCsvProper(await r.text());
     if (!_liveMode) return;
-    // Col indices 5-8 hold both a header-text row (team names) and a numbers row —
-    // only the numbers row qualifies, so require F/G to parse as numbers.
-    let vals = null;
+    // Header row: whichever row has a cell containing "المجموع" — team names/count
+    // are read from that row instead of being hardcoded, so adding/removing a team
+    // column in the sheet doesn't need a code change here.
+    let hdrs = null, vals = null;
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
-      if (row.length < 9) continue;
-      const f = (row[5] || '').trim(), g = (row[6] || '').trim();
-      if (f !== '' && g !== '' && !isNaN(parseFloat(f)) && !isNaN(parseFloat(g))) {
-        vals = [f, g, (row[7] || '').trim(), (row[8] || '').trim()];
-        break;
+      let totalIdx = -1;
+      for (let c = 0; c < row.length; c++) { if ((row[c] || '').trim().includes('المجموع')) { totalIdx = c; break; } }
+      if (totalIdx <= 0) continue;
+      let startIdx = totalIdx;
+      while (startIdx > 0 && (row[startIdx - 1] || '').trim() !== '') startIdx--;
+      if (totalIdx - startIdx < 1) continue;
+      hdrs = row.slice(startIdx, totalIdx + 1).map(h => (h || '').trim());
+      for (let j = i + 1; j < rows.length; j++) {
+        const slice = rows[j].slice(startIdx, totalIdx + 1);
+        if (slice.length !== hdrs.length) continue;
+        if (slice.every(v => (v || '').trim() !== '' && !isNaN(parseFloat(v)))) { vals = slice.map(v => v.trim()); break; }
       }
+      break;
     }
-    if (!vals) throw new Error();
-    const hdrs = ['نورا و منار ومحمد بيومي', 'ندي وعمر و اسراء احمد', 'رحمه وهبه و ابراهيم درويش', 'المجموع'];
+    if (!hdrs || !vals) throw new Error();
     renderTeamsTable(wrap, hdrs, vals);
   } catch { if (_liveMode) genericTableFail(wrap); }
 }

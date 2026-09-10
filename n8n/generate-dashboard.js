@@ -160,6 +160,7 @@ function parseCsvProper(text) {
 var SALES_SHEET_ID = '1jLBqnbHc1ej2wnMSQiw5V6L6Xwltx4pVwO9E_aYr6IQ';
 var GID_BRANCH     = '1078209926';
 var GID_COMPLETE   = '699409480';
+var GID_TEAMS      = '1494121778';
 
 // لازم /export?format=csv — الـ /gviz/tq بيرجع كاش قديم للخلايا اللي فيها معادلات
 function gvizUrl(gid) {
@@ -584,9 +585,10 @@ async function archiveSalesTables(dateKey, updatedAt, now) {
     var salesRaw     = await fetchSalesRows(null);
     var branchRaw    = await fetchSalesRows(GID_BRANCH);
     var completeRaw  = await fetchSalesRows(GID_COMPLETE);
+    var teamsRaw     = await fetchSalesRows(GID_TEAMS);
 
     var salesData     = parseSalesTab(salesRaw);
-    var teamsData     = parseTeamsTab(salesRaw);      // نفس التاب بتاع السيلز
+    var teamsData     = parseTeamsTab(teamsRaw);
     var branchesData  = parseGenericSalesTable(branchRaw);
     var completedData = parseGenericSalesTable(completeRaw);
 
