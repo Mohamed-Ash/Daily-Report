@@ -436,15 +436,18 @@ function renderGenericTable(wrap, hdrs, rows) {
 }
 
 function renderTeamsTable(wrap, hdrs, vals) {
-  let html = '<table class="sales-table" style="table-layout:fixed"><thead><tr>';
+  // table-layout:fixed كان بيقسّم عرض الكارت بالتساوي على الأعمدة بغض النظر عن
+  // عددهم، فلما الفرق زادت من 3 لـ 5 الأسماء الطويلة بقت متلزقة في بعض. من غيره
+  // الجدول بيكبر بعرضه الطبيعي والـ tbl-scroll (زي باقي الجداول) بيعمل scroll أفقي.
+  let html = '<table class="sales-table"><thead><tr>';
   hdrs.forEach((h, i) => {
     const last = i === hdrs.length - 1;
-    html += '<th style="text-align:center;font-size:12px;' + (last ? 'color:var(--gold);width:90px' : '') + '">' + h + '</th>';
+    html += '<th style="text-align:center;font-size:12px;white-space:nowrap;' + (last ? 'color:var(--gold)' : '') + '">' + h + '</th>';
   });
   html += '</tr></thead><tbody><tr>';
   vals.forEach((v, i) => {
     const last = i === vals.length - 1;
-    html += '<td style="text-align:center;font-size:26px;font-weight:900;padding:18px 12px;' + (last ? 'color:var(--gold)' : '') + '">' + v + '</td>';
+    html += '<td style="text-align:center;font-size:26px;font-weight:900;padding:18px 12px;white-space:nowrap;' + (last ? 'color:var(--gold)' : '') + '">' + v + '</td>';
   });
   html += '</tr></tbody></table>';
   wrap.innerHTML = '<div class="tbl-scroll">' + html + '</div><div class="scroll-bar-wrap"><div class="scroll-track"><div class="scroll-thumb"></div></div></div>';
