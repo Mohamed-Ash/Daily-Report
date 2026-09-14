@@ -1,22 +1,22 @@
 {
-  "ts": "2026-09-13 14:00",
-  "total": 1085,
+  "ts": "2026-09-14 08:00",
+  "total": 1086,
   "active": 245,
   "onHold": 41,
   "completed": 763,
-  "cacheSize": 1107,
+  "cacheSize": 1108,
   "metrics": {
-    "p2": 41,
+    "p2": 45,
     "p3": 34,
-    "recv": 59,
-    "coll": 39,
-    "licMonth": 18,
-    "sijilSaudi": 106,
-    "clientApproval": 11,
+    "recv": 55,
+    "coll": 30,
+    "licMonth": 22,
+    "sijilSaudi": 109,
+    "clientApproval": 13,
     "overDue": 0,
     "sijilDelay": 0,
-    "sijilAmer": 2,
-    "amer": 26,
+    "sijilAmer": 4,
+    "amer": 27,
     "completedMonth": 21,
     "completed112": 3,
     "onHold": 41,
@@ -38,13 +38,17 @@
   ],
   "recv_sample": [
     "1251-116-1",
-    "1250-113-1",
     "1249-114-1",
     "1248-113-1",
-    "1247-113-1"
+    "1246-113-1",
+    "1243-114-1"
   ],
   "firstDone": null,
   "unclassified": [
+    {
+      "name": "1130-114-1",
+      "customStatusName": "Cancelled"
+    },
     {
       "name": "33-112-23",
       "customStatusName": "Cancelled"
