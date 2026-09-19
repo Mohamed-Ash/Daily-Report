@@ -1,5 +1,5 @@
 {
-  "ts": "2026-09-18 14:00",
+  "ts": "2026-09-19 08:00",
   "total": 1097,
   "active": 240,
   "onHold": 41,
@@ -8,11 +8,11 @@
   "metrics": {
     "p2": 47,
     "p3": 27,
-    "recv": 47,
+    "recv": 38,
     "coll": 24,
     "licMonth": 34,
-    "sijilSaudi": 115,
-    "clientApproval": 17,
+    "sijilSaudi": 116,
+    "clientApproval": 16,
     "overDue": 0,
     "sijilDelay": 2,
     "sijilAmer": 7,
